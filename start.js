@@ -1,5 +1,5 @@
-const playBtn = { x: 400, y: 420, w: 280, h: 86, label: "START SHIFT" };
-const instrBtn = { x: 400, y: 520, w: 280, h: 86, label: "INSTRUCTIONS" };
+const playBtn = { y: 500, w: 280, h: 86, label: "START SHIFT" };
+const instrBtn = { y: 620, w: 280, h: 86, label: "INSTRUCTIONS" };
 
 let titleFont;
 
@@ -27,7 +27,9 @@ function drawStart() {
 
   // Buttons
   drawMenuButton(playBtn, true);
+  playBtn.x = width / 2;
   drawMenuButton(instrBtn, false);
+  instrBtn.x = width / 2;
 
   cursor(isHover(playBtn) || isHover(instrBtn) ? HAND : ARROW);
 

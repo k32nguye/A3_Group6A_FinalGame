@@ -120,7 +120,7 @@ function drawMochiHUD() {
   noStroke();
   fill(255, 255, 255, 235);
   rectMode(CENTER);
-  rect(width / 2, 70, 740, 44, 22);
+  rect(width / 2, 70, 920, 44, 22);
 
   fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
   textAlign(CENTER, CENTER);
@@ -158,7 +158,9 @@ function drawCustomerRow(showTrueOrder) {
   }
 
   // order bubble
-  drawOrderBubble(70, 125, order, showTrueOrder);
+  if (phase === "PREVIEW") {
+    drawOrderBubble(70, 125, order, showTrueOrder);
+  }
 }
 
 function drawMochiMonster(x, y, size, idx, mood) {
@@ -450,7 +452,7 @@ function startRound() {
   orderPreviewUntil = millis() + 2000;
   phase = "PREVIEW";
 
-  let timeLimit = 5000 - (round - 1) * 400;
+  let timeLimit = 10000 - (round - 1) * 400;
   timeLimit = max(1800, timeLimit);
 
   mixEndsAt = orderPreviewUntil + timeLimit;

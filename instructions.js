@@ -1,4 +1,4 @@
-const backBtn = { x: 400, y: 710, w: 260, h: 86, label: "BACK" };
+const backBtn = { y: 710, w: 260, h: 86, label: "BACK" };
 
 function drawInstr() {
   background("lavender");
@@ -32,6 +32,7 @@ function drawInstr() {
 
   // Button
   drawInstrButton(backBtn);
+  backBtn.x = width / 2;
   cursor(isHover(backBtn) ? HAND : ARROW);
 }
 
