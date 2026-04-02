@@ -120,7 +120,7 @@ function drawMochiHUD() {
   noStroke();
   fill(255, 255, 255, 235);
   rectMode(CENTER);
-  rect(width / 2, 70, 920, 44, 22);
+  rect(width / 2, 70, 950, 44, 22);
 
   fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
   textAlign(CENTER, CENTER);
@@ -153,8 +153,8 @@ function drawCustomerRow(showTrueOrder) {
   // customers
   const xs = [190, 330, 470, 610];
   for (let i = 0; i < 4; i++) {
-    const mood = i === 0 ? "active" : "waiting";
-    drawMochiMonster(xs[i], 240, 70, i, mood);
+    const mood = i === monsterSwap ? "active" : "waiting";
+    drawMochiMonster(xs[i], 240, 70, (i + monsterSwap) % 4, mood);
   }
 
   // order bubble
@@ -164,64 +164,21 @@ function drawCustomerRow(showTrueOrder) {
 }
 
 function drawMochiMonster(x, y, size, idx, mood) {
-  const bodies = [
-    [600, 170, 185],
-    [185, 235, 170],
-    [170, 210, 255],
-    [240, 190, 255],
+  const happyMonster = [pinkMonster, blueMonster, greenMonster, orangeMonster];
+  const neutralMonster = [
+    pinkMonsterNeutral,
+    blueMonsterNeutral,
+    greenMonsterNeutral,
+    orangeMonsterNeutral,
   ];
-  const body = monsterColours[idx];
 
-  // shadow
-  noStroke();
-  fill(0, 0, 0, 25);
-  ellipse(x, y + size * 0.52, size * 0.95, size * 0.26);
+  const monsterMood = mood === "active" ? happyMonster : neutralMonster;
+  const img = monsterMood[idx];
+  if (!img) return;
 
-  // body
-  stroke(MOCHI.outline[0], MOCHI.outline[1], MOCHI.outline[2]);
-  strokeWeight(3);
-  fill(body[0], body[1], body[2]);
-  ellipse(x, y, size, size);
-
-  // tiny ears
-  noStroke();
-  fill(body[0] - 10, body[1] - 10, body[2] - 10);
-  triangle(
-    x - size * 0.3,
-    y - size * 0.42,
-    x - size * 0.08,
-    y - size * 0.62,
-    x + size * 0.02,
-    y - size * 0.38,
-  );
-  triangle(
-    x + size * 0.3,
-    y - size * 0.42,
-    x + size * 0.08,
-    y - size * 0.62,
-    x - size * 0.02,
-    y - size * 0.38,
-  );
-
-  // eyes
-  stroke(MOCHI.outline[0], MOCHI.outline[1], MOCHI.outline[2]);
-  strokeWeight(3);
-  fill(255);
-  ellipse(x - size * 0.18, y - size * 0.05, size * 0.22, size * 0.22);
-  ellipse(x + size * 0.18, y - size * 0.05, size * 0.22, size * 0.22);
-
-  fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
-  ellipse(x - size * 0.18, y - size * 0.04, size * 0.1, size * 0.1);
-  ellipse(x + size * 0.18, y - size * 0.04, size * 0.1, size * 0.1);
-
-  // mouth
-  noFill();
-  stroke(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
-  strokeWeight(3);
-  if (mood === "active")
-    arc(x, y + size * 0.12, size * 0.3, size * 0.18, 0, PI);
-  else arc(x, y + size * 0.14, size * 0.26, size * 0.14, PI, TWO_PI);
-
+  imageMode(CENTER);
+  image(img, x, y, 150, 150);
+  imageMode(CORNER);
   noStroke();
 }
 
@@ -336,7 +293,7 @@ function drawBinColumn(title, list, x, y, slotKey) {
   text(title, x + 75, y - 34);
 
   for (let i = 0; i < list.length; i++) {
-    const card = { x: x, y: y + i * 45, w: 150, h: 44 };
+    const card = { x: x + 75, y: y + i * 49, w: 190, h: 44 };
     const hover = isHover(card);
     const chosen = selection[slotKey] && selection[slotKey].id === list[i].id;
 
@@ -347,18 +304,18 @@ function drawBinColumn(title, list, x, y, slotKey) {
     noStroke();
     if (chosen) fill(180, 220, 255, 230);
     else fill(255, 255, 255, hover ? 235 : 195);
-    rect(card.x - 20, card.y - 18, card.w + 40, card.h);
+    rect(x - 20, card.y - card.h / 2, card.w, card.h);
 
     // colours
     const shown = getShownColor(list[i].c);
     fill(shown[0], shown[1], shown[2]);
-    ellipse(card.x, card.y + 5, 22, 22);
+    ellipse(x, y + i * 49, 22, 22);
 
     // text
     fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
     textAlign(LEFT, CENTER);
     textSize(12);
-    text(list[i].label, card.x + 20, card.y + 5);
+    text(list[i].label, x + 20, y + i * 49);
   }
 }
 
@@ -435,6 +392,8 @@ function checkPick(slotKey, list) {
   }
 }
 
+let monsterSwap = 0;
+
 // ----------------------
 // ROUND LOGIC
 // ----------------------
@@ -444,6 +403,8 @@ function startRound() {
     syrup: random(SYRUPS),
     topping: random(TOPPINGS),
   };
+
+  monsterSwap = floor(random(4));
 
   selection.base = null;
   selection.syrup = null;

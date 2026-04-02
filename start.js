@@ -2,9 +2,27 @@ const playBtn = { y: 500, w: 280, h: 86, label: "START SHIFT" };
 const instrBtn = { y: 620, w: 280, h: 86, label: "INSTRUCTIONS" };
 
 let titleFont;
+let pinkMonster;
+let blueMonster;
+let greenMonster;
+let orangeMonster;
+let pinkMonsterNeutral;
+let blueMonsterNeutral;
+let greenMonsterNeutral;
+let orangeMonsterNeutral;
 
 function preload() {
   titleFont = loadFont("assets/fonts/PressStart2P-Regular.ttf");
+
+  // monsters
+  pinkMonster = loadImage("assets/pinkmonsterhappy.png");
+  pinkMonsterNeutral = loadImage("assets/pinkmonsterneutral.png");
+  blueMonster = loadImage("assets/bluemonster.png");
+  blueMonsterNeutral = loadImage("assets/bluemonsterneutral.png");
+  greenMonster = loadImage("assets/greenmonster.png");
+  greenMonsterNeutral = loadImage("assets/greenmonsterneutral.png");
+  orangeMonster = loadImage("assets/orangemonster.png");
+  orangeMonsterNeutral = loadImage("assets/orangemonsterneutral.png");
 }
 
 function drawStart() {
