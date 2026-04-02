@@ -8,15 +8,15 @@ function drawLose() {
   fill(40, 45, 60);
   textAlign(CENTER, CENTER);
   textSize(45);
-  text("MYSTERY BOBA", width / 2, 280);
+  text("MYSTERY BOBA", width / 2, 340);
 
   fill(70, 75, 90);
   textSize(14);
-  text(endingText, width / 2, height / 2 + 10);
+  text(endingText, width / 2, height / 2);
 
   fill("red");
   textSize(14);
-  text("Click or press ENTER for next customer.", width / 2, 530);
+  text("Click or press ENTER for next customer.", width / 2, 600);
 }
 
 function loseMousePressed() {

@@ -8,15 +8,15 @@ function drawWin() {
   fill(40, 45, 60);
   textAlign(CENTER, CENTER);
   textSize(45);
-  text("ORDER SLAYED", width / 2, 280);
+  text("ORDER SLAYED", width / 2, 360);
 
   fill(70, 75, 90);
   textSize(20);
-  text(endingText, width / 2, height / 2 + 10);
+  text(endingText, width / 2, height / 2);
 
   fill("green");
   textSize(14);
-  text("Click or press ENTER for next customer.", width / 2, 530);
+  text("Click or press ENTER for next customer.", width / 2, 600);
 }
 
 function winMousePressed() {

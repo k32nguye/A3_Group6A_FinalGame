@@ -21,7 +21,7 @@ const TOPPINGS = [
 ];
 
 let cvdType = "DEUTAN";
-const serveBtn = { x: 2245, y: 400, w: 260, h: 86 };
+const serveBtn = { x: 1500, y: 400, w: 260, h: 86 };
 
 // ----------------------
 // MOCHI STYLE COLOURS
@@ -186,7 +186,7 @@ function drawOrderBubble(x, y, ord, showTrueOrder) {
   noStroke();
   fill(255, 255, 255, 235);
   rectMode(CORNER);
-  rect(x, y, 360, 60, 30);
+  rect(x, y, 550, 60, 30);
 
   // bubble tail
   triangle(x + 30, y + 60, x + 70, y + 60, x + 96, y + 120);
@@ -196,6 +196,9 @@ function drawOrderBubble(x, y, ord, showTrueOrder) {
     { label: "Syrup", item: ord.syrup, px: x + 138 },
     { label: "Top", item: ord.topping, px: x + 258 },
   ];
+  if (round >= 3) {
+    slots.push({ label: "Straw", item: ord.straw, px: x + 378 });
+  }
 
   for (let i = 0; i < slots.length; i++) {
     let col = slots[i].item.c;
@@ -233,8 +236,13 @@ function drawCounter() {
 }
 
 function drawCupMochi(cx, cy) {
+  const baseC = selection.base ? selection.base.c : [230, 230, 230];
+  const syrupC = selection.syrup ? selection.syrup.c : [240, 240, 240];
+  const topC = selection.topping ? selection.topping.c : [220, 220, 220];
+  const strawC = selection.straw ? selection.straw.c : [200, 200, 200];
+
   // straw
-  stroke(MOCHI.outline[0], MOCHI.outline[1], MOCHI.outline[2]);
+  stroke(strawC[0], strawC[1], strawC[2]);
   strokeWeight(10);
   strokeCap(SQUARE);
   line(width / 2, cy - 120, width / 2, cy + 68);
@@ -245,16 +253,6 @@ function drawCupMochi(cx, cy) {
   fill(255, 255, 255, 220);
   rectMode(CENTER);
   rect(cx, cy, 130, 170, 22);
-
-  const baseC = selection.base
-    ? getShownColor(selection.base.c)
-    : [230, 230, 230];
-  const syrupC = selection.syrup
-    ? getShownColor(selection.syrup.c)
-    : [240, 240, 240];
-  const topC = selection.topping
-    ? getShownColor(selection.topping.c)
-    : [220, 220, 220];
 
   noStroke();
   fill(baseC[0], baseC[1], baseC[2], 200);
@@ -280,6 +278,9 @@ function drawIngredientBins() {
   drawBinColumn("TEA", TEA_BASES, 130, y, "base");
   drawBinColumn("SYRUP", SYRUPS, 330, y, "syrup");
   drawBinColumn("TOPPING", TOPPINGS, 530, y, "topping");
+  if (round >= 3) {
+    drawBinColumn("STRAW", STRAWS, 730, y, "straw");
+  }
 }
 
 function drawBinColumn(title, list, x, y, slotKey) {
@@ -320,7 +321,11 @@ function drawBinColumn(title, list, x, y, slotKey) {
 }
 
 function drawServeButtonMochi() {
-  const enabled = selection.base && selection.syrup && selection.topping;
+  const enabled =
+    selection.base &&
+    selection.syrup &&
+    selection.topping &&
+    (round < 3 || selection.straw);
   const hover = isHover(serveBtn);
 
   rectMode(CENTER);
@@ -349,8 +354,13 @@ function gameMousePressed() {
   checkPick("base", TEA_BASES);
   checkPick("syrup", SYRUPS);
   checkPick("topping", TOPPINGS);
+  checkPick("straw", STRAWS);
 
-  const enabled = selection.base && selection.syrup && selection.topping;
+  const enabled =
+    selection.base &&
+    selection.syrup &&
+    selection.topping &&
+    (round < 3 || selection.straw);
   if (enabled && isHover(serveBtn)) serveDrink();
 }
 
@@ -402,6 +412,7 @@ function startRound() {
     base: random(TEA_BASES),
     syrup: random(SYRUPS),
     topping: random(TOPPINGS),
+    straw: round >= 3 ? random(STRAWS) : null,
   };
 
   monsterSwap = floor(random(4));
@@ -409,6 +420,7 @@ function startRound() {
   selection.base = null;
   selection.syrup = null;
   selection.topping = null;
+  selection.straw = null;
 
   orderPreviewUntil = millis() + 2000;
   phase = "PREVIEW";
@@ -424,9 +436,11 @@ function serveDrink() {
     selection.base &&
     selection.syrup &&
     selection.topping &&
+    selection.straw &&
     selection.base.id === order.base.id &&
     selection.syrup.id === order.syrup.id &&
-    selection.topping.id === order.topping.id;
+    selection.topping.id === order.topping.id &&
+    (round < 3 || selection.straw.id === order.straw.id);
 
   if (ok) {
     score += 100;
@@ -515,3 +529,13 @@ function getShownColor(rgb) {
     lerp(cvd[2], gray, mono),
   ];
 }
+
+//straw
+
+const STRAWS = [
+  { id: "dark", label: "Classic", c: [40, 50, 70] },
+  { id: "red", label: "Red", c: [220, 60, 60] },
+  { id: "pink", label: "Pink", c: [240, 130, 170] },
+  { id: "yellow", label: "Yellow", c: [245, 210, 60] },
+  { id: "green", label: "Green", c: [80, 180, 100] },
+];
