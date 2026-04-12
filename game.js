@@ -180,18 +180,19 @@ function drawOrderArea(showOrder) {
   // "Customer wants:" label
   fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
   textAlign(LEFT, TOP);
-  textSize(11);
+  textStyle(BOLD);
+  textSize(13);
   text("CUSTOMER WANTS:", 36, 80);
+  textStyle(NORMAL);
 
   // Order bubble — always TRUE colours (what the customer expects)
   if (showOrder && order) {
     drawOrderBubble(40, 96);
   } else if (!showOrder) {
-    // Hidden order hint
     fill(180, 180, 200, 160);
     textAlign(CENTER, CENTER);
-    textSize(13);
-    text("Order hidden — rely on memory!", width / 2, 160);
+    textSize(14);
+    text("Order hidden - rely on your memory!", width / 2, 160);
   }
 
   // Customer monsters
@@ -206,28 +207,45 @@ function drawOrderBubble(x, y) {
   noStroke();
   fill(255, 255, 255, 235);
   rectMode(CORNER);
-  rect(x, y, 520, 70, 28);
+  rect(x, y, 530, 76, 28);
   // Tail
-  triangle(x + 20, y + 70, x + 55, y + 70, x + 38, y + 108);
+  triangle(x + 20, y + 76, x + 58, y + 76, x + 40, y + 112);
 
   const slots = [
-    { label: "Base",   item: order.base,    px: x + 20  },
-    { label: "Syrup",  item: order.syrup,   px: x + 190 },
-    { label: "Topping",item: order.topping, px: x + 360 },
+    { label: "Base",    item: order.base,    px: x + 18  },
+    { label: "Syrup",   item: order.syrup,   px: x + 192 },
+    { label: "Topping", item: order.topping, px: x + 366 },
   ];
 
-  for (const s of slots) {
-    // TRUE colour — no CVD filter applied here
+  for (let i = 0; i < slots.length; i++) {
+    const s = slots[i];
+    // TRUE colour - no CVD filter here; this is what the customer wants
     const c = s.item.c;
     noStroke();
     fill(c[0], c[1], c[2]);
     rectMode(CORNER);
-    rect(s.px, y + 14, 36, 36, 8);
+    rect(s.px, y + 12, 40, 40, 8);
+
+    // Shape symbol (white outline) so players can use shape not just colour
+    noFill();
+    stroke(255, 255, 255, 210);
+    strokeWeight(2);
+    const sc = s.px + 20;
+    const sr = y + 32;
+    if      (i === 0) ellipse(sc, sr, 20, 20);
+    else if (i === 1) { push(); translate(sc, sr); rotate(PI/4); rectMode(CENTER); rect(0,0,16,16); pop(); }
+    else              triangle(sc, y+16, sc-11, y+48, sc+11, y+48);
+    noStroke();
 
     fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
     textAlign(LEFT, CENTER);
+    textStyle(BOLD);
+    textSize(13);
+    text(s.label, s.px + 48, y + 24);
+    textStyle(NORMAL);
+    fill(100, 100, 130);
     textSize(11);
-    text(s.label, s.px + 42, y + 32);
+    text(s.item.label, s.px + 48, y + 42);
   }
 }
 
