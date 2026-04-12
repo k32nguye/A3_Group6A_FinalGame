@@ -222,7 +222,8 @@ function tutMousePressed() {
   // Steps 0-3: next button or anywhere on card
   if (isHover(_TUT_NEXT)) {
     playSound("click");
-    tutStep++;
+    if (tutStep === 2) tutStep = 4;
+    else tutStep++;
   }
 }
 
@@ -230,6 +231,9 @@ function tutKeyPressed() {
   if (tutStep === -1 && (keyCode === ENTER || keyCode === 32)) {
     playSound("click");
     _advanceTutPrelude();
+  } else if (tutStep === 2 && (keyCode === ENTER || keyCode === 32)) {
+    playSound("click");
+    tutStep = 4;
   } else if (tutStep < 4 && (keyCode === ENTER || keyCode === 32)) {
     playSound("click");
     tutStep++;
@@ -258,9 +262,9 @@ function _drawTutSkip() {
   cursor(h ? HAND : ARROW);
 }
 
-function _drawTutNextBtn(label) {
+function _drawTutNextBtn(label, btnYOffset = 0) {
   _TUT_NEXT.x = width / 2;
-  _TUT_NEXT.y = height - 200;
+  _TUT_NEXT.y = height - 200 + btnYOffset;
   const h = isHover(_TUT_NEXT);
   noStroke();
   fill(h ? 250 : 255, h ? 190 : 205, h ? 85 : 120);
@@ -395,11 +399,12 @@ function _drawTutOrder() {
 
   const cardW = min(width - 80, 780);
   const cx = width / 2;
-  const cardY = _tutCard(height - 140);
+  const cardY = _tutCard(height - 120);
+  const orderYOffset = 150; // increase to move this whole section lower
   const bodyW = cardW - 60;
   const bodyX = cx - bodyW / 2;
 
-  _tutCardTitle("THE CUSTOMER'S ORDER", cardY, [60, 130, 200]);
+  _tutCardTitle("THE CUSTOMER'S ORDER", cardY + orderYOffset, [60, 130, 200]);
 
   // Draw an example order bubble (normal colours)
   const sampleOrder = {
@@ -408,7 +413,7 @@ function _drawTutOrder() {
     topping: TOPPINGS[1],
   };
   const bubbleX = cx - 260;
-  const bubbleY = cardY + 70;
+  const bubbleY = cardY + 70 + orderYOffset;
 
   // White speech bubble
   noStroke();
@@ -467,41 +472,46 @@ function _drawTutOrder() {
   }
 
   // Clear callouts for "True colours" and "Shape cues"
-  const leftCallout = { x: bubbleX + 130, y: bubbleY - 36, w: 220, h: 58 };
-  const rightCallout = { x: bubbleX + 390, y: bubbleY - 36, w: 250, h: 74 };
+  // const leftCallout = { x: bubbleX + 130, y: bubbleY - 36, w: 220, h: 58 };
+  // const rightCallout = { x: bubbleX + 390, y: bubbleY - 36, w: 250, h: 74 };
 
-  noStroke();
-  fill(230, 243, 255);
-  rectMode(CENTER);
-  rect(leftCallout.x, leftCallout.y, leftCallout.w, leftCallout.h, 12);
-  rect(rightCallout.x, rightCallout.y, rightCallout.w, rightCallout.h, 12);
+  // noStroke();
+  // fill(230, 243, 255);
+  // rectMode(CENTER);
+  // rect(leftCallout.x, leftCallout.y, leftCallout.w, leftCallout.h, 12);
+  // rect(rightCallout.x, rightCallout.y, rightCallout.w, rightCallout.h, 12);
 
-  fill(55, 125, 190);
-  textAlign(CENTER, CENTER);
-  textSize(12);
-  textLeading(17);
-  text(
-    "True colours = exactly\nwhat the customer wants",
-    leftCallout.x,
-    leftCallout.y,
-  );
-  text(
-    "Shape = category\n(circle = base, diamond = syrup,\ntriangle = topping)",
-    rightCallout.x,
-    rightCallout.y,
-  );
+  // fill(55, 125, 190);
+  // textAlign(CENTER, CENTER);
+  // textSize(12);
+  // textLeading(17);
+  // text(
+  //   "True colours = exactly\nwhat the customer wants",
+  //   leftCallout.x,
+  //   leftCallout.y,
+  // );
+  // text(
+  //   "Shape = category\n(circle = base, diamond = syrup,\ntriangle = topping)",
+  //   rightCallout.x,
+  //   rightCallout.y,
+  // );
 
-  // Pointer lines from callouts to the order bubble
-  stroke(60, 130, 200, 190);
-  strokeWeight(2);
-  line(leftCallout.x, leftCallout.y + leftCallout.h / 2, bubbleX + 50, bubbleY + 6);
-  line(
-    rightCallout.x,
-    rightCallout.y + rightCallout.h / 2,
-    bubbleX + 395,
-    bubbleY + 10,
-  );
-  noStroke();
+  // // Pointer lines from callouts to the order bubble
+  // stroke(60, 130, 200, 190);
+  // strokeWeight(2);
+  // line(
+  //   leftCallout.x,
+  //   leftCallout.y + leftCallout.h / 2,
+  //   bubbleX + 50,
+  //   bubbleY + 6,
+  // );
+  // line(
+  //   rightCallout.x,
+  //   rightCallout.y + rightCallout.h / 2,
+  //   bubbleX + 395,
+  //   bubbleY + 10,
+  // );
+  // noStroke();
 
   // Explanation below
   fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
@@ -511,9 +521,10 @@ function _drawTutOrder() {
   text(
     "When a customer places an order, their speech bubble shows what they want\n" +
       "using TRUE colours. This is always shown in the order area at the top of the screen.\n\n" +
-      "Each coloured square also has a shape symbol to help you identify the category.",
+      "Each coloured square also has a shape symbol to help you identify the category.\n" +
+      "Tip: if colours look close, compare shape and brightness first.",
     bodyX,
-    cardY + 210,
+    cardY + 210 + orderYOffset,
     bodyW,
   );
 
@@ -530,90 +541,113 @@ function _drawTutCVD() {
   const cardW = min(width - 80, 780);
   const cx = width / 2;
   const cardY = _tutCard(height - 140);
+  const cvdYOffset = 100; // increase to move this section lower
   const bodyW = cardW - 60;
   const bodyX = cx - bodyW / 2;
 
-  _tutCardTitle("WHAT YOU SEE", cardY, [150, 60, 200]);
+  _tutCardTitle("SPECIAL GLASSES", cardY + cvdYOffset, [150, 60, 200]);
 
   fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
   textAlign(CENTER, TOP);
   textSize(14);
   textLeading(23);
+  const paraY = cardY + 58 + cvdYOffset;
+  const lineH = 23;
+
+  textStyle(NORMAL);
   text(
-    "The customer sees their order in normal colour.\n" +
-      "But in Acts 1-3, YOUR view of the ingredient bins is filtered through a type of CVD.",
+    "You've got a pair of special glasses!\n\n" +
+      "They translate what monsters see into colours you understand.",
     bodyX,
-    cardY + 58,
+    paraY,
     bodyW,
   );
 
-  // Side by side comparison: 3 colours, normal vs deutan
+  textStyle(BOLD);
+  text(
+    "They don’t last long before they need to cool down.",
+    bodyX,
+    paraY + lineH * 3,
+    bodyW,
+  );
+
+  textStyle(NORMAL);
+  text(
+    "Use them to learn each order then try to match it even without them.",
+    bodyX,
+    paraY + lineH * 4,
+    bodyW,
+  );
+
+  // Side by side comparison: human colours -> monster-seen colours
   const pairs = [
     { label: "Strawberry\n(Red-Pink)", c: [225, 80, 105] },
     { label: "Honeydew\n(Bright Green)", c: [105, 210, 120] },
     { label: "Mango\n(Golden Yellow)", c: [245, 175, 60] },
   ];
 
-  const colW = 180;
-  const pairY = cardY + 138;
-  const left = cx - colW * 1.5;
+  const visualGap = 90; // extra space so visual does not overlap paragraph text
+  const pairY = cardY + 138 + cvdYOffset + visualGap;
 
-  // Headers
+  // Headers (structured chips to avoid floating/misaligned text)
+  const leftHeadX = cx - 120;
+  const rightHeadX = cx + 120;
+  const headY = pairY - 24;
   noStroke();
-  fill(60, 160, 60);
+  fill(220, 245, 220, 210);
+  rectMode(CENTER);
+  rect(leftHeadX, headY, 200, 28, 10);
+  fill(255, 220, 220, 210);
+  rect(rightHeadX, headY, 210, 28, 10);
+
   textAlign(CENTER, CENTER);
   textStyle(BOLD);
-  textSize(13);
-  text("Customer sees", cx - 48, pairY - 22);
-  fill(200, 60, 60);
-  text("You see (Deuteranopia)", cx + 80, pairY - 22);
+  textSize(12);
+  fill(45, 120, 45);
+  text("Glasses ON", leftHeadX, headY);
+  fill(165, 45, 45);
+  text("Cooldown", rightHeadX, headY);
   textStyle(NORMAL);
 
+  // Rows: left (human) -> right (monster sees)
+  const leftSwatchX = cx - 145;
+  const rightSwatchX = cx + 145;
+  const rowStartY = pairY + 16;
+  const rowGap = 78;
+
   for (let i = 0; i < pairs.length; i++) {
-    const px = left + i * colW + colW / 2;
+    const rowY = rowStartY + i * rowGap;
     const c = pairs[i].c;
     const cvd = _tutSimDeutan(c);
 
-    // Normal swatch
+    // Human colour box (left)
     fill(c[0], c[1], c[2]);
     rectMode(CENTER);
-    rect(px - 46, pairY + 26, 52, 52, 8);
+    rect(leftSwatchX, rowY, 52, 52, 8);
 
-    // Arrow
+    // Arrow (centered exactly between both swatches)
+    const arrowStartX = leftSwatchX + 34;
+    const arrowEndX = rightSwatchX - 34;
+    stroke(140, 140, 160);
+    strokeWeight(3);
+    line(arrowStartX, rowY, arrowEndX, rowY);
+    noStroke();
     fill(140, 140, 160);
-    textSize(20);
-    textAlign(CENTER, CENTER);
-    text("->", px, pairY + 26);
+    triangle(arrowEndX, rowY, arrowEndX - 9, rowY - 6, arrowEndX - 9, rowY + 6);
 
-    // CVD swatch
+    // Monster-seen colour box (right)
     fill(cvd[0], cvd[1], cvd[2]);
-    rect(px + 46, pairY + 26, 52, 52, 8);
+    rect(rightSwatchX, rowY, 52, 52, 8);
 
-    // Ingredient name
+    // Ingredient label for each row
     fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
-    textAlign(CENTER, TOP);
+    textAlign(LEFT, CENTER);
     textSize(12);
-    textLeading(18);
-    text(pairs[i].label, px, pairY + 58);
+    textLeading(17);
+    text(pairs[i].label, leftSwatchX + 40, rowY);
   }
 
-  // Key insight box
-  noStroke();
-  fill(255, 230, 180, 200);
-  rectMode(CENTER);
-  rect(cx, pairY + 130, cardW - 60, 66, 12);
-  fill(100, 70, 20);
-  textAlign(CENTER, CENTER);
-  textSize(14);
-  textLeading(22);
-  text(
-    "This is why the game is challenging - and why 300 million people navigate this every day.",
-    cx - (cardW - 90) / 2,
-    pairY + 130,
-    cardW - 90,
-  );
-
-  _drawTutNextBtn("NEXT  ->");
+  _drawTutNextBtn("PRACTICE ROUND  ->", 45);
   _drawTutStepDots(5, 2);
 }
 
@@ -626,20 +660,25 @@ function _drawTutShapes() {
   const cardW = min(width - 80, 780);
   const cx = width / 2;
   const cardY = _tutCard(height - 140);
+  const shapeYOffset = 14;
   const bodyW = cardW - 60;
   const bodyX = cx - bodyW / 2;
 
-  _tutCardTitle("HOW TO TELL THINGS APART", cardY, [60, 140, 60]);
+  _tutCardTitle(
+    "READ SHAPES & BRIGHTNESS",
+    cardY + shapeYOffset,
+    [60, 140, 60],
+  );
 
   fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
   textAlign(CENTER, TOP);
   textSize(14);
   textLeading(23);
   text(
-    "People with CVD learn to rely on shape, brightness, and position - not just colour.\n" +
-      "This game teaches you those same strategies. Each ingredient category has its own shape.",
+    "When colours get confusing, use shape, brightness, and position first.\n" +
+      "Each ingredient category has its own shape cue, so you can still build the right drink.",
     bodyX,
-    cardY + 55,
+    cardY + 55 + shapeYOffset,
     bodyW,
   );
 
@@ -668,7 +707,7 @@ function _drawTutShapes() {
     },
   ];
 
-  const cardBlockY = cardY + 144;
+  const cardBlockY = cardY + 144 + shapeYOffset;
 
   for (let i = 0; i < shapes.length; i++) {
     const bx = cx - 230 + i * 230;
