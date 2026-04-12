@@ -14,6 +14,19 @@ let _tutBaseCards = [];
 let _tutSyrupCards = [];
 let _tutTopCards = [];
 let _tutServeBox = null;
+let _tutPreludeStartMs = 0;
+let _tutPreludeLine = 0;
+let _tutPreludeChars = 0;
+let _tutPreludeLastTypeMs = 0;
+
+const _TUT_PRELUDE_LINES = [
+  "You weren’t supposed to be here.",
+  "Somehow… you got hired at a monster boba café.",
+  "There’s just one problem:",
+  "Monsters don’t see colours the way you do.",
+  "Use your human vision while you can…",
+  "Then learn to see the world their way.",
+];
 
 const _TUT_NEXT = { x: 0, y: 0, w: 220, h: 56 };
 const _TUT_SKIP = { x: 0, y: 0, w: 160, h: 46 };
@@ -23,6 +36,10 @@ function startTutorial() {
   tutStep = -1;
   tutPracticePhase = 0;
   tutSel = { base: null, syrup: null, topping: null };
+  _tutPreludeStartMs = millis();
+  _tutPreludeLine = 0;
+  _tutPreludeChars = 0;
+  _tutPreludeLastTypeMs = millis();
   // Practice order: Milk Tea + Mango + Pudding (distinct colours, easy to see in normal vision)
   tutOrder = { base: TEA_BASES[1], syrup: SYRUPS[2], topping: TOPPINGS[2] };
   _tutBaseCards = [];
@@ -70,28 +87,97 @@ function _drawTutPrelude() {
 
   const cardW = min(width - 80, 780);
   const cx = width / 2;
+  const t = millis() * 0.001;
+  // Typewriter timing
+  const curLineText = _TUT_PRELUDE_LINES[_tutPreludeLine] || "";
+  const lineDone = _tutPreludeChars >= curLineText.length;
+  if (!lineDone && millis() - _tutPreludeLastTypeMs > 26) {
+    _tutPreludeChars = min(_tutPreludeChars + 1, curLineText.length);
+    _tutPreludeLastTypeMs = millis();
+  }
+
+  // Floating boba/bubble ambience
+  noStroke();
+  for (let i = 0; i < 14; i++) {
+    const speed = 18 + (i % 4) * 6;
+    const bx = ((i * 137 + t * speed) % (width + 180)) - 90;
+    const by = 95 + ((i * 69) % (height - 190)) + sin(t * 1.5 + i) * 14;
+    const r = 14 + (i % 5) * 8;
+    fill(255, 255, 255, 36);
+    ellipse(bx, by, r * 2.3, r * 2.3);
+    fill(180, 210, 255, 24);
+    ellipse(bx + 2, by + 2, r * 1.5, r * 1.5);
+  }
+
+  // Soft glowing backdrop behind card
+  fill(175, 195, 255, 28);
+  ellipse(cx, height / 2 - 20, cardW + 110, height - 80);
 
   noStroke();
   fill(255, 255, 255, 235);
   rectMode(CENTER);
-  rect(cx, height / 2 - 30, cardW, height - 140, 18);
+  rect(
+    cx,
+    height / 2 - 30 + sin(frameCount * 0.04) * 2,
+    cardW,
+    height - 140,
+    18,
+  );
+
+  // Little spark accents
+  for (let i = 0; i < 3; i++) {
+    const sx = cx - 280 + i * 280;
+    const sy = height / 2 - 215 + sin(t * 2 + i * 0.8) * 6;
+    fill(255, 220, 120, 120);
+    ellipse(sx, sy, 8, 8);
+    fill(255, 240, 200, 170);
+    ellipse(sx, sy, 4, 4);
+  }
 
   if (bodyFont) textFont(bodyFont);
-  fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
   textAlign(CENTER, CENTER);
-  textSize(21);
-  textStyle(BOLD);
-  text("You weren’t supposed to be here.", cx, height / 2 + 30);
-
+  for (let i = 0; i <= _tutPreludeLine; i++) {
+    const fullLine = _TUT_PRELUDE_LINES[i];
+    const shown =
+      i < _tutPreludeLine ? fullLine : fullLine.slice(0, _tutPreludeChars);
+    fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2], 255);
+    textStyle(i === 0 ? BOLD : NORMAL);
+    textSize(i === 0 ? 21 : 18);
+    text(shown, cx, height / 2 + 30 + i * 28);
+  }
   textStyle(NORMAL);
-  textSize(18);
-  text("Somehow… you got hired at a monster boba café.", cx, height / 2 + 58);
-  text("There’s just one problem:", cx, height / 2 + 86);
-  text("Monsters don’t see colours the way you do.", cx, height / 2 + 114);
-  text("Use your human vision while you can…", cx, height / 2 + 142);
-  text("Then learn to see the world their way.", cx, height / 2 + 170);
 
-  _drawTutNextBtn("CONTINUE  ->");
+  // subtle prompt pulse
+  const promptA = 95 + sin(frameCount * 0.08) * 55;
+  fill(80, 100, 140, promptA);
+  textSize(13);
+  if (_tutPreludeLine < _TUT_PRELUDE_LINES.length - 1 || !lineDone) {
+    text("Press SPACE/ENTER (or click) for next line", cx, height - 250);
+  } else {
+    text("Story complete — press ENTER or click CONTINUE", cx, height - 250);
+    _drawTutNextBtn("CONTINUE  ->");
+  }
+}
+
+function _advanceTutPrelude() {
+  const curLineText = _TUT_PRELUDE_LINES[_tutPreludeLine] || "";
+
+  // If current line is still typing, finish it instantly
+  if (_tutPreludeChars < curLineText.length) {
+    _tutPreludeChars = curLineText.length;
+    return;
+  }
+
+  // Move to next line
+  if (_tutPreludeLine < _TUT_PRELUDE_LINES.length - 1) {
+    _tutPreludeLine++;
+    _tutPreludeChars = 0;
+    _tutPreludeLastTypeMs = millis();
+    return;
+  }
+
+  // All lines complete -> proceed
+  tutStep = 0;
 }
 
 function tutMousePressed() {
@@ -100,6 +186,21 @@ function tutMousePressed() {
   if (tutStep < 4 && isHover(_TUT_SKIP)) {
     playSound("click");
     currentScreen = "act_intro";
+    return;
+  }
+  if (tutStep === -1) {
+    const atLastLine = _tutPreludeLine === _TUT_PRELUDE_LINES.length - 1;
+    const lineDone =
+      _tutPreludeChars >= _TUT_PRELUDE_LINES[_tutPreludeLine].length;
+    if (atLastLine && lineDone) {
+      if (isHover(_TUT_NEXT)) {
+        playSound("click");
+        tutStep = 0;
+      }
+    } else {
+      playSound("click");
+      _advanceTutPrelude();
+    }
     return;
   }
   if (tutStep === 4) {
@@ -121,7 +222,10 @@ function tutMousePressed() {
 }
 
 function tutKeyPressed() {
-  if (tutStep < 4 && (keyCode === ENTER || keyCode === 32)) {
+  if (tutStep === -1 && (keyCode === ENTER || keyCode === 32)) {
+    playSound("click");
+    _advanceTutPrelude();
+  } else if (tutStep < 4 && (keyCode === ENTER || keyCode === 32)) {
     playSound("click");
     tutStep++;
   } else if (tutStep === 5 && (keyCode === ENTER || keyCode === 32)) {
