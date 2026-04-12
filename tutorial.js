@@ -136,6 +136,7 @@ function _drawTutPrelude() {
 
   if (bodyFont) textFont(bodyFont);
   textAlign(CENTER, CENTER);
+  const preludeBaseY = height / 2 - 120;
   for (let i = 0; i <= _tutPreludeLine; i++) {
     const fullLine = _TUT_PRELUDE_LINES[i];
     const shown =
@@ -143,7 +144,7 @@ function _drawTutPrelude() {
     fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2], 255);
     textStyle(i === 0 ? BOLD : NORMAL);
     textSize(i === 0 ? 21 : 18);
-    text(shown, cx, height / 2 + 30 + i * 28);
+    text(shown, cx, preludeBaseY + i * 28);
   }
   textStyle(NORMAL);
 
@@ -154,7 +155,11 @@ function _drawTutPrelude() {
   if (_tutPreludeLine < _TUT_PRELUDE_LINES.length - 1 || !lineDone) {
     text("Press SPACE/ENTER (or click) for next line", cx, height - 250);
   } else {
-    text("Story complete — press ENTER or click CONTINUE", cx, height - 250);
+    text(
+      "Story complete. Press SPACE/ENTER or click CONTINUE",
+      cx,
+      height - 250,
+    );
     _drawTutNextBtn("CONTINUE  ->");
   }
 }
@@ -326,7 +331,7 @@ function _drawTutWelcome() {
   if (titleFont) textFont(titleFont);
   fill(80, 120, 200);
   textAlign(CENTER, CENTER);
-  textSize(19);
+  textSize(25);
   text("COLOUR CONFUSION BOBA BAR", cx, height / 2 - 185);
   if (bodyFont) textFont(bodyFont);
 
@@ -366,19 +371,17 @@ function _drawTutWelcome() {
 
   fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
   textAlign(CENTER, CENTER);
-  textSize(14);
+  textSize(20);
   textLeading(24);
-  text("You weren’t supposed to be here.", cx, height / 2 + 30);
-
-  text("Somehow… you got hired at a monster boba café.", cx, height / 2 + 58);
-
-  text("There’s just one problem:", cx, height / 2 + 86);
-
-  text("Monsters don’t see colours the way you do.", cx, height / 2 + 114);
-
-  text("Use your human vision while you can…", cx, height / 2 + 142);
-
-  text("Then learn to see the world their way.", cx, height / 2 + 170);
+  text(
+    "You run a bubble tea cafe for mochi monster customers.",
+    cx,
+    height / 2 + 54,
+  );
+  textStyle(BOLD);
+  text("Objective:", cx, height / 2 + 100);
+  textStyle(NORMAL);
+  text("Make the drinks right and try not to stand out!", cx, height / 2 + 126);
 
   _drawTutNextBtn("START TUTORIAL  ->");
   _drawTutStepDots(5, 0);
@@ -463,30 +466,42 @@ function _drawTutOrder() {
     text(slots[i].item.label, slots[i].px + 44, bubbleY + 42);
   }
 
-  // Annotation arrows and labels
-  const annotations = [
-    {
-      x: bubbleX + 40,
-      y: bubbleY - 36,
-      text: "True colours - exactly\nwhat the customer wants",
-    },
-    {
-      x: bubbleX + 520,
-      y: bubbleY + 40,
-      text: "Shape = category\n(circle=base, diamond=syrup,\ntriangle=topping)",
-    },
-  ];
-  for (const a of annotations) {
-    fill(60, 130, 200);
-    textAlign(LEFT, TOP);
-    textSize(13);
-    textLeading(20);
-    text(a.text, a.x + 14, a.y);
-    stroke(60, 130, 200, 180);
-    strokeWeight(2);
-    line(a.x, a.y + 12, a.x + 12, a.y + 12);
-    noStroke();
-  }
+  // Clear callouts for "True colours" and "Shape cues"
+  const leftCallout = { x: bubbleX + 130, y: bubbleY - 36, w: 220, h: 58 };
+  const rightCallout = { x: bubbleX + 390, y: bubbleY - 36, w: 250, h: 74 };
+
+  noStroke();
+  fill(230, 243, 255);
+  rectMode(CENTER);
+  rect(leftCallout.x, leftCallout.y, leftCallout.w, leftCallout.h, 12);
+  rect(rightCallout.x, rightCallout.y, rightCallout.w, rightCallout.h, 12);
+
+  fill(55, 125, 190);
+  textAlign(CENTER, CENTER);
+  textSize(12);
+  textLeading(17);
+  text(
+    "True colours = exactly\nwhat the customer wants",
+    leftCallout.x,
+    leftCallout.y,
+  );
+  text(
+    "Shape = category\n(circle = base, diamond = syrup,\ntriangle = topping)",
+    rightCallout.x,
+    rightCallout.y,
+  );
+
+  // Pointer lines from callouts to the order bubble
+  stroke(60, 130, 200, 190);
+  strokeWeight(2);
+  line(leftCallout.x, leftCallout.y + leftCallout.h / 2, bubbleX + 50, bubbleY + 6);
+  line(
+    rightCallout.x,
+    rightCallout.y + rightCallout.h / 2,
+    bubbleX + 395,
+    bubbleY + 10,
+  );
+  noStroke();
 
   // Explanation below
   fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
