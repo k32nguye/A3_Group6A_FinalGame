@@ -1,7 +1,7 @@
 // =========================
 // TUTORIAL
 // A guided walkthrough before Act 1 begins.
-// Steps: 0 Welcome, 1 The Order, 2 CVD Effect, 3 Shape Cues, 4 Practice, 5 Done
+// Steps: -1 Prelude, 0 Welcome, 1 The Order, 2 CVD Effect, 3 Shape Cues, 4 Practice, 5 Done
 // =========================
 
 let tutStep = 0;
@@ -20,7 +20,7 @@ const _TUT_SKIP = { x: 0, y: 0, w: 160, h: 46 };
 
 // Called by startNewGame() in main.js
 function startTutorial() {
-  tutStep = 0;
+  tutStep = -1;
   tutPracticePhase = 0;
   tutSel = { base: null, syrup: null, topping: null };
   // Practice order: Milk Tea + Mango + Pudding (distinct colours, easy to see in normal vision)
@@ -38,6 +38,9 @@ function drawTutorial() {
   // Skip button always visible on steps 0-3
   if (tutStep < 4) _drawTutSkip();
   switch (tutStep) {
+    case -1:
+      _drawTutPrelude();
+      break;
     case 0:
       _drawTutWelcome();
       break;
@@ -57,6 +60,38 @@ function drawTutorial() {
       _drawTutDone();
       break;
   }
+}
+
+// =========================
+// STEP -1: PRELUDE (TEXT ONLY)
+// =========================
+function _drawTutPrelude() {
+  background(230, 240, 255);
+
+  const cardW = min(width - 80, 780);
+  const cx = width / 2;
+
+  noStroke();
+  fill(255, 255, 255, 235);
+  rectMode(CENTER);
+  rect(cx, height / 2 - 30, cardW, height - 140, 18);
+
+  if (bodyFont) textFont(bodyFont);
+  fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
+  textAlign(CENTER, CENTER);
+  textSize(21);
+  textStyle(BOLD);
+  text("You weren’t supposed to be here.", cx, height / 2 + 30);
+
+  textStyle(NORMAL);
+  textSize(18);
+  text("Somehow… you got hired at a monster boba café.", cx, height / 2 + 58);
+  text("There’s just one problem:", cx, height / 2 + 86);
+  text("Monsters don’t see colours the way you do.", cx, height / 2 + 114);
+  text("Use your human vision while you can…", cx, height / 2 + 142);
+  text("Then learn to see the world their way.", cx, height / 2 + 170);
+
+  _drawTutNextBtn("CONTINUE  ->");
 }
 
 function tutMousePressed() {
@@ -116,7 +151,7 @@ function _drawTutSkip() {
 
 function _drawTutNextBtn(label) {
   _TUT_NEXT.x = width / 2;
-  _TUT_NEXT.y = height - 52;
+  _TUT_NEXT.y = height - 200;
   const h = isHover(_TUT_NEXT);
   noStroke();
   fill(h ? 250 : 255, h ? 190 : 205, h ? 85 : 120);
@@ -191,14 +226,16 @@ function _drawTutWelcome() {
   text("COLOUR CONFUSION BOBA BAR", cx, height / 2 - 185);
   if (bodyFont) textFont(bodyFont);
 
-  fill(100, 105, 130);
+  fill(43, 67, 186);
   textSize(14);
   textAlign(CENTER, CENTER);
+  textStyle(BOLD);
+
   text("A game about seeing the world differently", cx, height / 2 - 150);
 
   // Three act preview icons
   const acts = [
-    { label: "Act 1", desc: "Experience\nDeuteranopia", col: [180, 230, 180] },
+    { label: "Act 1", desc: "Experience\nDeuteranopia", col: [180, 220, 180] },
     {
       label: "Act 2",
       desc: "Learn to adapt\nwith labels",
@@ -216,32 +253,28 @@ function _drawTutWelcome() {
     textAlign(CENTER, CENTER);
     textStyle(BOLD);
     textSize(14);
-    text(acts[i].label, bx, height / 2 - 95);
+    text(acts[i].label, bx, height / 2 - 80);
     textStyle(NORMAL);
     textSize(13);
     textLeading(21);
-    text(acts[i].desc, bx, height / 2 - 52);
+    text(acts[i].desc, bx, height / 2 - 40);
   }
 
   fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
   textAlign(CENTER, CENTER);
   textSize(14);
   textLeading(24);
-  text(
-    "You run a bubble tea cafe for mochi monster customers.",
-    cx,
-    height / 2 + 54,
-  );
-  text(
-    "Your challenge: match their order when you see colours differently.",
-    cx,
-    height / 2 + 82,
-  );
-  text(
-    "This short tutorial walks you through one practice shift.",
-    cx,
-    height / 2 + 124,
-  );
+  text("You weren’t supposed to be here.", cx, height / 2 + 30);
+
+  text("Somehow… you got hired at a monster boba café.", cx, height / 2 + 58);
+
+  text("There’s just one problem:", cx, height / 2 + 86);
+
+  text("Monsters don’t see colours the way you do.", cx, height / 2 + 114);
+
+  text("Use your human vision while you can…", cx, height / 2 + 142);
+
+  text("Then learn to see the world their way.", cx, height / 2 + 170);
 
   _drawTutNextBtn("START TUTORIAL  ->");
   _drawTutStepDots(5, 0);
