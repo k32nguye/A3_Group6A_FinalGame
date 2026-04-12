@@ -1,4 +1,4 @@
-const playBtn = { y: 500, w: 280, h: 86, label: "START SHIFT" };
+const playBtn = { y: 500, w: 280, h: 86, label: "START GAME" };
 const instrBtn = { y: 620, w: 280, h: 86, label: "INSTRUCTIONS" };
 
 let titleFont;
@@ -48,17 +48,18 @@ function drawStart() {
 
 function startMousePressed() {
   if (isHover(playBtn)) {
-    startNewShift();
-    currentScreen = "game";
+    playSound("click");
+    startNewGame();
   } else if (isHover(instrBtn)) {
+    playSound("click");
     currentScreen = "instr";
   }
 }
 
 function startKeyPressed() {
   if (keyCode === ENTER) {
-    startNewShift();
-    currentScreen = "game";
+    playSound("click");
+    startNewGame();
   }
   if (key === "i" || key === "I") currentScreen = "instr";
 }
@@ -84,12 +85,7 @@ function drawMenuButton(btn, primary) {
   text(btn.label, btn.x, btn.y);
 }
 
-function startNewShift() {
-  score = 0;
-  round = 1;
-  visionMode = "CVD";
-  startRound();
-}
+// startNewShift replaced by startNewGame() in main.js
 
 function drawMochiSky() {
   background(233, 246, 255);

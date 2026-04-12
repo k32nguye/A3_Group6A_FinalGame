@@ -1,541 +1,546 @@
-// ----------------------
+// =====================
 // INGREDIENT DATA
-// ----------------------
+// colorName = what the colour actually is (shown as accessibility label in Act 2)
+// =====================
 const TEA_BASES = [
-  { id: "black", label: "Black Tea", c: [95, 60, 35] },
-  { id: "milk", label: "Milk Tea", c: [190, 150, 105] },
-  { id: "green", label: "Green Tea", c: [80, 155, 90] },
+  { id: "black", label: "Black Tea",  colorName: "dark brown",   c: [95,  60,  35]  },
+  { id: "milk",  label: "Milk Tea",   colorName: "tan / beige",  c: [190, 150, 105] },
+  { id: "green", label: "Green Tea",  colorName: "olive green",  c: [80,  155, 90]  },
 ];
 
 const SYRUPS = [
-  { id: "straw", label: "Strawberry", c: [225, 80, 105] },
-  { id: "melon", label: "Honeydew", c: [105, 210, 120] },
-  { id: "mango", label: "Mango", c: [245, 175, 60] },
-  { id: "taro", label: "Taro", c: [185, 105, 210] },
+  { id: "straw", label: "Strawberry", colorName: "red-pink",     c: [225, 80,  105] },
+  { id: "melon", label: "Honeydew",   colorName: "bright green", c: [105, 210, 120] },
+  { id: "mango", label: "Mango",      colorName: "golden yellow",c: [245, 175, 60]  },
+  { id: "taro",  label: "Taro",       colorName: "purple",       c: [185, 105, 210] },
 ];
 
 const TOPPINGS = [
-  { id: "boba", label: "Boba", c: [55, 35, 25] },
-  { id: "jelly", label: "Lychee Jelly", c: [205, 120, 215] },
-  { id: "pud", label: "Pudding", c: [245, 215, 120] },
+  { id: "boba",  label: "Boba",        colorName: "dark brown",   c: [55,  35,  25]  },
+  { id: "jelly", label: "Lychee Jelly",colorName: "pink-purple",  c: [205, 120, 215] },
+  { id: "pud",   label: "Pudding",     colorName: "pale yellow",  c: [245, 215, 120] },
 ];
 
-let cvdType = "DEUTAN";
-const serveBtn = { x: 1000, y: 400, w: 260, h: 86 };
-
-// ----------------------
-// MOCHI STYLE COLOURS
-// ----------------------
-const MOCHI = {
-  sky: [233, 246, 255],
-  hills: [255, 210, 225],
-  counterTop: [200, 245, 235],
-  counterFront: [170, 230, 220],
-  outline: [40, 50, 70],
-  inkDark: [30, 35, 45],
-  accent: [255, 205, 120],
-};
-
-// ----------------------
-// DIFFICULTY FUNCTION
-// ----------------------
-
-function getMonochromeFactor() {
-  // increases every round
-  let factor = (round - 1) * 0.12;
-
-  // stronger effect in CVD mode
-  if (visionMode === "CVD") {
-    factor += 0.2;
-  }
-
-  // cap so it never becomes fully invisible
-  return constrain(factor, 0, 0.9);
-}
-
-// ----------------------
-// SCREEN DRAW
-// ----------------------
-function drawGame() {
-  background("lavender");
-
-  // HUD
-  drawMochiHUD();
-
-  if (phase === "PREVIEW") {
-    drawPreviewPhaseMochi();
-    if (millis() > orderPreviewUntil) phase = "MIX";
-  } else {
-    drawMixPhaseMochi();
-  }
-}
-
-function drawPreviewPhaseMochi() {
-  // Customer row + bubble (shows order clearly)
-  drawCustomerRow(false);
-
-  // Center hint
-  fill(255, 255, 255, 235);
-  noStroke();
-  rectMode(CENTER);
-  rect(width / 2, 545, 620, 200, 22);
-
-  fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
-  textAlign(CENTER, CENTER);
-  textSize(30);
-  text("MEMORIZE THE ORDER!", width / 2, 530);
-
-  const tLeft = max(0, orderPreviewUntil - millis());
-  fill("red");
-  textSize(20);
-  text(
-    "Order disappears in " + (tLeft / 1000).toFixed(1) + "s",
-    width / 2,
-    570,
-  );
-}
-
-function drawMixPhaseMochi() {
-  // Customer row (bubble still exists but now follows vision mode feel)
-  drawCustomerRow(false);
-
-  // Counter
-  drawCounter();
-
-  // Ingredient bins (bottom)
-  drawIngredientBins();
-
-  // Serve button
-  drawServeButtonMochi();
-
-  // Auto-serve when timer ends
-  const tLeft = max(0, mixEndsAt - millis());
-  if (tLeft <= 0) serveDrink();
-}
-
-function drawMochiHUD() {
-  const tLeft = max(0, mixEndsAt - millis());
-  const secs = (tLeft / 1000).toFixed(1);
-
-  noStroke();
-  fill(255, 255, 255, 235);
-  rectMode(CENTER);
-  rect(width / 2, 70, 950, 44, 22);
-
-  fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
-  textAlign(CENTER, CENTER);
-  textSize(9.8);
-  text(
-    "Round " +
-      round +
-      "  •  Score " +
-      score +
-      "  •  Time " +
-      secs +
-      "s" +
-      "  •  Vision " +
-      visionMode +
-      " (" +
-      cvdType +
-      ") (V) •  C = Switch •  R = Restart",
-    width / 2,
-    70,
-  );
-}
-
-function drawCustomerRow(showTrueOrder) {
-  // row panel
-  noStroke();
-  fill(233, 246, 255);
-  rectMode(CORNER);
-  rect(30, 105, width - 60, 200, 22);
-
-  // customers
-  const xs = [190, 330, 470, 610];
-  for (let i = 0; i < 4; i++) {
-    const mood = i === monsterSwap ? "active" : "waiting";
-    drawMochiMonster(xs[i], 240, 70, (i + monsterSwap) % 4, mood);
-  }
-
-  // order bubble
-  if (phase === "PREVIEW") {
-    drawOrderBubble(70, 125, order, showTrueOrder);
-  }
-}
-
-function drawMochiMonster(x, y, size, idx, mood) {
-  const happyMonster = [pinkMonster, blueMonster, greenMonster, orangeMonster];
-  const neutralMonster = [
-    pinkMonsterNeutral,
-    blueMonsterNeutral,
-    greenMonsterNeutral,
-    orangeMonsterNeutral,
-  ];
-
-  const monsterMood = mood === "active" ? neutralMonster : happyMonster;
-  const img = monsterMood[idx];
-  if (!img) return;
-
-  imageMode(CENTER);
-  image(img, x, y, 150, 150);
-  imageMode(CORNER);
-  noStroke();
-}
-
-function drawOrderBubble(x, y, ord, showTrueOrder) {
-  noStroke();
-  fill(255, 255, 255, 235);
-  rectMode(CORNER);
-  rect(x, y, 550, 60, 30);
-
-  // bubble tail
-  triangle(x + 30, y + 60, x + 70, y + 60, x + 96, y + 120);
-
-  const slots = [
-    { label: "Base", item: ord.base, px: x + 18 },
-    { label: "Syrup", item: ord.syrup, px: x + 138 },
-    { label: "Top", item: ord.topping, px: x + 258 },
-  ];
-  if (round >= 3) {
-    slots.push({ label: "Straw", item: ord.straw, px: x + 378 });
-  }
-
-  for (let i = 0; i < slots.length; i++) {
-    let col = slots[i].item.c;
-
-    // When previewing, show true colours. During mixing, show what player sees.
-    if (showTrueOrder) col = getShownColor(col);
-
-    drawIngredientIcon(slots[i].px, y, col, slots[i].label);
-  }
-}
-
-function drawIngredientIcon(x, y, col, label) {
-  fill(col[0], col[1], col[2]);
-  ellipse(x + 26, y + 30, 30, 30);
-
-  fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
-  textAlign(LEFT, CENTER);
-  textSize(12);
-  text(label, x + 46, y + 30);
-}
-
-function drawCounter() {
-  // counter top
-  noStroke();
-  fill(MOCHI.counterTop[0], MOCHI.counterTop[1], MOCHI.counterTop[2]);
-  rectMode(CORNER);
-  rect(30, 320, width - 60, 160, 22);
-
-  // counter front
-  fill(MOCHI.counterFront[0], MOCHI.counterFront[1], MOCHI.counterFront[2]);
-  rect(30, 410, width - 60, 280, 22);
-
-  // cup in the middle
-  drawCupMochi(width / 2, 390);
-}
-
-function drawCupMochi(cx, cy) {
-  const baseC = selection.base ? selection.base.c : [230, 230, 230];
-  const syrupC = selection.syrup ? selection.syrup.c : [240, 240, 240];
-  const topC = selection.topping ? selection.topping.c : [220, 220, 220];
-  const strawC = selection.straw ? selection.straw.c : [200, 200, 200];
-
-  // straw
-  stroke(strawC[0], strawC[1], strawC[2]);
-  strokeWeight(10);
-  strokeCap(SQUARE);
-  line(width / 2, cy - 120, width / 2, cy + 68);
-  noStroke();
-
-  stroke(MOCHI.outline[0], MOCHI.outline[1], MOCHI.outline[2]);
-  strokeWeight(4);
-  fill(255, 255, 255, 220);
-  rectMode(CENTER);
-  rect(cx, cy, 130, 170, 22);
-
-  noStroke();
-  fill(baseC[0], baseC[1], baseC[2], 200);
-  rect(cx, cy + 48, 112, 60, 16);
-
-  fill(syrupC[0], syrupC[1], syrupC[2], 190);
-  rect(cx, cy - 5, 112, 47, 16);
-
-  fill(topC[0], topC[1], topC[2], 180);
-  rect(cx, cy - 48, 112, 40, 16);
-
-  // pearls
-  if (selection.topping && selection.topping.id === "boba") {
-    fill(30, 30, 30, 120);
-    for (let i = 0; i < 6; i++) {
-      ellipse(cx - 45 + i * 18, cy + 62 + (i % 2) * 6, 12, 12);
-    }
-  }
-}
-
-function drawIngredientBins() {
-  const y = 560;
-  drawBinColumn("TEA", TEA_BASES, 130, y, "base");
-  drawBinColumn("SYRUP", SYRUPS, 330, y, "syrup");
-  drawBinColumn("TOPPING", TOPPINGS, 530, y, "topping");
-  if (round >= 3) {
-    drawBinColumn("STRAW", STRAWS, 730, y, "straw");
-  }
-}
-
-function drawBinColumn(title, list, x, y, slotKey) {
-  fill(255, 255, 255, 220);
-  rectMode(CORNER);
-  rect(x - 20, y - 50, 190, 230, 18);
-
-  fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
-  textAlign(CENTER, TOP);
-  textSize(14);
-  text(title, x + 75, y - 34);
-
-  for (let i = 0; i < list.length; i++) {
-    const card = { x: x + 75, y: y + i * 49, w: 190, h: 44 };
-    const hover = isHover(card);
-    const chosen = selection[slotKey] && selection[slotKey].id === list[i].id;
-
-    list[i]._card = card;
-
-    // drink selection
-    rectMode(CORNER);
-    noStroke();
-    if (chosen) fill(180, 220, 255, 230);
-    else fill(255, 255, 255, hover ? 235 : 195);
-    rect(x - 20, card.y - card.h / 2, card.w, card.h);
-
-    // colours
-    const shown = getShownColor(list[i].c);
-    fill(shown[0], shown[1], shown[2]);
-    ellipse(x, y + i * 49, 22, 22);
-
-    // text
-    fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
-    textAlign(LEFT, CENTER);
-    textSize(12);
-    text(list[i].label, x + 20, y + i * 49);
-  }
-}
-
-function drawServeButtonMochi() {
-  const enabled =
-    selection.base &&
-    selection.syrup &&
-    selection.topping &&
-    (round < 3 || selection.straw);
-  const hover = isHover(serveBtn);
-
-  rectMode(CENTER);
-  noStroke();
-
-  if (!enabled) fill("lightgrey");
-  else if (hover) fill(250, 190, 85);
-  else fill(255, 205, 120);
-
-  rect(serveBtn.x, serveBtn.y, serveBtn.w, serveBtn.h, 22);
-
-  fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
-  textAlign(CENTER, CENTER);
-  textSize(22);
-  text("SERVE", serveBtn.x, serveBtn.y);
-
-  cursor(enabled && hover ? HAND : ARROW);
-}
-
-// ----------------------
-// INPUT HANDLERS
-// ----------------------
-function gameMousePressed() {
-  if (phase !== "MIX") return;
-
-  checkPick("base", TEA_BASES);
-  checkPick("syrup", SYRUPS);
-  checkPick("topping", TOPPINGS);
-  checkPick("straw", STRAWS);
-
-  const enabled =
-    selection.base &&
-    selection.syrup &&
-    selection.topping &&
-    (round < 3 || selection.straw);
-  if (enabled && isHover(serveBtn)) serveDrink();
-}
-
-function gameKeyPressed() {
-  if (key === "v" || key === "V") {
-    visionMode = visionMode === "NORMAL" ? "CVD" : "NORMAL";
-  }
-
-  if (key === "r" || key === "R") {
-    currentScreen = "start";
-  }
-
-  if (keyCode === ENTER) {
-    if (
-      phase === "MIX" &&
-      selection.base &&
-      selection.syrup &&
-      selection.topping
-    ) {
-      serveDrink();
-    }
-  }
-
-  // switch CVD type
-  if (key === "c" || key === "C") {
-    if (cvdType === "DEUTAN") cvdType = "PROTAN";
-    else if (cvdType === "PROTAN") cvdType = "TRITAN";
-    else cvdType = "DEUTAN";
-  }
-}
-
-function checkPick(slotKey, list) {
-  for (let i = 0; i < list.length; i++) {
-    const card = list[i]._card;
-    if (card && isHover(card)) {
-      selection[slotKey] = list[i];
-      return;
-    }
-  }
-}
-
-let monsterSwap = 0;
-
-// ----------------------
-// ROUND LOGIC
-// ----------------------
-function startRound() {
-  order = {
-    base: random(TEA_BASES),
-    syrup: random(SYRUPS),
-    topping: random(TOPPINGS),
-    straw: round >= 3 ? random(STRAWS) : null,
-  };
-
-  monsterSwap = floor(random(4));
-
-  selection.base = null;
-  selection.syrup = null;
-  selection.topping = null;
-  selection.straw = null;
-
-  orderPreviewUntil = millis() + 2000;
-  phase = "PREVIEW";
-
-  let timeLimit = 10000 - (round - 1) * 400;
-  timeLimit = max(1800, timeLimit);
-
-  mixEndsAt = orderPreviewUntil + timeLimit;
-}
-
-function serveDrink() {
-  const ok =
-    selection.base &&
-    selection.syrup &&
-    selection.topping &&
-    selection.straw &&
-    selection.base.id === order.base.id &&
-    selection.syrup.id === order.syrup.id &&
-    selection.topping.id === order.topping.id &&
-    (round < 3 || selection.straw.id === order.straw.id);
-
-  if (ok) {
-    score += 100;
-    endingText = "Perfect boba!\nCustomer tips you $2.";
-    currentScreen = "win";
-  } else {
-    score = max(0, score - 30);
-    endingText =
-      'MYSTERY BOBA CREATED.\nCustomer: "' +
-      random([
-        "Why is it... savory?",
-        "This tastes like tax season.",
-        "Honeydew? More like honey-don't.",
-        "My boba is spiritually confused.",
-        "It’s giving ‘oops’.",
-      ]) +
-      '"';
-    currentScreen = "lose";
-  }
-}
-
-// In CVD mode, compress red & green closer → harder to tell some choices apart.
-// choose which deficiency you want to simulate
-
-function getMonochromeFactor() {
-  // if NORMAL → no fade at all
-  if (visionMode === "NORMAL") return 0;
-
-  let factor = (round - 1) * 0.1;
-
-  return constrain(factor, 0, 0.92);
-}
-
+// Serve button layout
+const serveBtn = { x: 0, y: 0, w: 200, h: 58 };
+
+// =====================
+// CVD SIMULATION
+// =====================
 function applyCVD(rgb) {
-  let r = rgb[0];
-  let g = rgb[1];
-  let b = rgb[2];
-
-  if (visionMode !== "CVD") {
-    return [r, g, b];
-  }
+  let r = rgb[0], g = rgb[1], b = rgb[2];
+  if (visionMode !== "CVD") return [r, g, b];
 
   if (cvdType === "DEUTAN") {
-    // greens shift toward red
-    let rg = (r + g) / 2;
-    r = lerp(r, rg, 0.5);
-    g = lerp(g, rg, 0.8);
-  } else if (cvdType === "PROTAN") {
-    // reds shift toward green and look less bright
-    let rg = (r + g) / 2;
-    r = lerp(r, rg, 0.8);
-    g = lerp(g, rg, 0.4);
-    r *= 0.6;
-  } else if (cvdType === "TRITAN") {
-    // blue-green confusion, plus some yellow-red confusion
-    let bg = (b + g) / 2;
-    b = lerp(b, bg, 0.85);
-    g = lerp(g, bg, 0.5);
+    // Greens & reds converge — most common (~5% of males)
+    const rg = (r + g) / 2;
+    r = lerp(r, rg, 0.82);
+    g = lerp(g, rg, 0.92);
 
-    let yr = (r + g) / 2;
-    r = lerp(r, yr, 0.25);
+  } else if (cvdType === "PROTAN") {
+    // Reds are dim and brownish — (~1% of males)
+    const rg = (r + g) / 2;
+    r = lerp(r, rg, 0.80) * 0.58;
+    g = lerp(g, rg, 0.40);
+
+  } else if (cvdType === "TRITAN") {
+    // Blues and greens converge; yellows shift orange (~0.01%)
+    const bg = (b + g) / 2;
+    b = lerp(b, bg, 0.88);
+    g = lerp(g, bg, 0.52);
+    const yr = (r + g) / 2;
+    r = lerp(r, yr, 0.22);
   }
 
   return [constrain(r, 0, 255), constrain(g, 0, 255), constrain(b, 0, 255)];
 }
 
 function getShownColor(rgb) {
-  let r = rgb[0];
-  let g = rgb[1];
-  let b = rgb[2];
-
-  // IF NORMAL → return original colour immediately
-  if (visionMode === "NORMAL") {
-    return [r, g, b];
-  }
-
-  let cvd = applyCVD(rgb);
-
-  // grayscale fade after CVD shift
-  let gray = 0.299 * cvd[0] + 0.587 * cvd[1] + 0.114 * cvd[2];
-  let mono = getMonochromeFactor();
-
-  return [
-    lerp(cvd[0], gray, mono),
-    lerp(cvd[1], gray, mono),
-    lerp(cvd[2], gray, mono),
-  ];
+  if (visionMode === "NORMAL") return [rgb[0], rgb[1], rgb[2]];
+  return applyCVD(rgb);
 }
 
-//straw
+// =====================
+// MAIN GAME DRAW
+// =====================
+function drawGame() {
+  background(233, 246, 255);
 
-const STRAWS = [
-  { id: "dark", label: "Classic", c: [40, 50, 70] },
-  { id: "red", label: "Red", c: [220, 60, 60] },
-  { id: "pink", label: "Pink", c: [240, 130, 170] },
-  { id: "yellow", label: "Yellow", c: [245, 210, 60] },
-  { id: "green", label: "Green", c: [80, 180, 100] },
-];
+  drawGameHUD();
+
+  // Act 1 & 2: order stays visible the whole round (no memorisation needed — focus on colour ID)
+  // Act 3: order shows briefly then hides (memory mechanic returns)
+  if (act <= 2) {
+    phase = "MIX";
+  }
+
+  if (phase === "PREVIEW") {
+    drawOrderArea(true);          // show order with TRUE colours
+    drawPreviewBanner();
+    if (millis() > orderPreviewUntil) phase = "MIX";
+  } else {
+    drawOrderArea(act === 3);     // Act 3: order hidden after preview (pass false to hide)
+    drawWorkArea();
+  }
+
+  // Timer auto-serve
+  if (phase === "MIX") {
+    const tLeft = max(0, mixEndsAt - millis());
+    if (tLeft <= 0 && phase === "MIX") serveDrink();
+    // Tick sound when < 3 s
+    if (tLeft < 3000 && tLeft > 0 && frameCount % 60 === 0) playSound("tick");
+  }
+}
+
+// ── HUD ──────────────────────────────────────────────────
+function drawGameHUD() {
+  // Background strip
+  noStroke();
+  fill(255, 255, 255, 225);
+  rectMode(CORNER);
+  rect(0, 0, width, 68);
+
+  const tLeft = (phase === "MIX") ? max(0, mixEndsAt - millis()) : 0;
+  const secs  = (tLeft / 1000).toFixed(1);
+
+  // Act / Round
+  fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
+  textAlign(LEFT, CENTER);
+  textSize(13);
+  text("ACT " + act + " · Round " + actRound + "/5", 20, 24);
+
+  // Score
+  textAlign(LEFT, CENTER);
+  textSize(13);
+  text("Score: " + score, 20, 48);
+
+  // Timer (centre)
+  const timerColour = tLeft < 3000 ? [220, 60, 60] : [40, 50, 70];
+  fill(timerColour[0], timerColour[1], timerColour[2]);
+  textAlign(CENTER, CENTER);
+  textSize(22);
+  if (phase === "MIX") text(secs + "s", width / 2, 34);
+
+  // CVD indicator (right)
+  const cvdLabel = visionMode === "NORMAL"
+    ? "Normal Vision"
+    : cvdType === "DEUTAN" ? "Deuteranopia (red-green)"
+    : cvdType === "PROTAN" ? "Protanopia (red-dim)"
+    : "Tritanopia (blue-green)";
+
+  const dotCol = visionMode === "NORMAL" ? [80, 160, 80] : [200, 80, 80];
+  noStroke();
+  fill(dotCol[0], dotCol[1], dotCol[2]);
+  ellipse(width - 220, 34, 14, 14);
+
+  fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
+  textAlign(LEFT, CENTER);
+  textSize(12);
+  text(cvdLabel, width - 208, 34);
+
+  // Act 2: label status indicator
+  if (act === 2) {
+    fill(showLabels ? [60, 160, 90] : [200, 80, 80]);
+    textSize(11);
+    textAlign(RIGHT, CENTER);
+    text(showLabels ? "Accessibility Labels: ON" : "Accessibility Labels: OFF", width - 16, 58);
+  }
+}
+
+// ── Preview banner (Act 3 only) ───────────────────────────
+function drawPreviewBanner() {
+  noStroke();
+  fill(255, 255, 255, 235);
+  rectMode(CENTER);
+  rect(width / 2, height / 2, 500, 80, 18);
+
+  fill(180, 60, 60);
+  textAlign(CENTER, CENTER);
+  textSize(20);
+  text("MEMORISE THE ORDER!", width / 2, height / 2 - 10);
+
+  const tLeft = max(0, orderPreviewUntil - millis());
+  fill(100, 100, 130);
+  textSize(13);
+  text("Disappears in " + (tLeft / 1000).toFixed(1) + "s", width / 2, height / 2 + 16);
+}
+
+// ── Order area (customer + order bubble) ──────────────────
+// showOrder: whether to render the order bubble at all (false = hide in Act 3 MIX phase)
+function drawOrderArea(showOrder) {
+  // Panel
+  noStroke();
+  fill(MOCHI.sky[0], MOCHI.sky[1], MOCHI.sky[2]);
+  rectMode(CORNER);
+  rect(20, 74, width - 40, 188, 16);
+
+  // "Customer wants:" label
+  fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
+  textAlign(LEFT, TOP);
+  textSize(11);
+  text("CUSTOMER WANTS:", 36, 80);
+
+  // Order bubble — always TRUE colours (what the customer expects)
+  if (showOrder && order) {
+    drawOrderBubble(40, 96);
+  } else if (!showOrder) {
+    // Hidden order hint
+    fill(180, 180, 200, 160);
+    textAlign(CENTER, CENTER);
+    textSize(13);
+    text("Order hidden — rely on memory!", width / 2, 160);
+  }
+
+  // Customer monsters
+  const xs = [width - 530, width - 400, width - 270, width - 140];
+  for (let i = 0; i < 4; i++) {
+    const mood = (i === monsterSwap) ? "active" : "waiting";
+    drawMochiMonster(xs[i], 185, 55, (i + monsterSwap) % 4, mood);
+  }
+}
+
+function drawOrderBubble(x, y) {
+  noStroke();
+  fill(255, 255, 255, 235);
+  rectMode(CORNER);
+  rect(x, y, 520, 70, 28);
+  // Tail
+  triangle(x + 20, y + 70, x + 55, y + 70, x + 38, y + 108);
+
+  const slots = [
+    { label: "Base",   item: order.base,    px: x + 20  },
+    { label: "Syrup",  item: order.syrup,   px: x + 190 },
+    { label: "Topping",item: order.topping, px: x + 360 },
+  ];
+
+  for (const s of slots) {
+    // TRUE colour — no CVD filter applied here
+    const c = s.item.c;
+    noStroke();
+    fill(c[0], c[1], c[2]);
+    rectMode(CORNER);
+    rect(s.px, y + 14, 36, 36, 8);
+
+    fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
+    textAlign(LEFT, CENTER);
+    textSize(11);
+    text(s.label, s.px + 42, y + 32);
+  }
+}
+
+// ── Work area: bins + cup + serve button ──────────────────
+function drawWorkArea() {
+  // Counter surface
+  noStroke();
+  fill(MOCHI.counterTop[0], MOCHI.counterTop[1], MOCHI.counterTop[2]);
+  rectMode(CORNER);
+  rect(20, 270, width - 40, 120, 14);
+  fill(MOCHI.counterFront[0], MOCHI.counterFront[1], MOCHI.counterFront[2]);
+  rect(20, 360, width - 40, height - 360, 14);
+
+  // "What you see:" label
+  fill(visionMode === "CVD" ? [180, 60, 60] : [40, 50, 70]);
+  textAlign(LEFT, TOP);
+  textSize(11);
+  text(
+    visionMode === "CVD"
+      ? "WHAT YOU SEE (through " + cvdType + " CVD):"
+      : "WHAT YOU SEE (normal vision):",
+    36, 276
+  );
+
+  // Ingredient bins
+  drawIngredientBins();
+
+  // Cup preview
+  drawCupMochi();
+
+  // Serve button
+  serveBtn.x = width - 130;
+  serveBtn.y = height - 80;
+  drawServeButton();
+}
+
+// ── Ingredient bins ───────────────────────────────────────
+function drawIngredientBins() {
+  const binGap = 210;
+  const startX = 40;
+  const y      = 390;
+
+  drawBinColumn("TEA BASE",  TEA_BASES, startX,            y, "base");
+  drawBinColumn("SYRUP",     SYRUPS,    startX + binGap,   y, "syrup");
+  drawBinColumn("TOPPING",   TOPPINGS,  startX + binGap*2, y, "topping");
+}
+
+function drawBinColumn(title, list, x, y, slotKey) {
+  const colW = 190;
+
+  // Column background
+  noStroke();
+  fill(255, 255, 255, 210);
+  rectMode(CORNER);
+  rect(x, y - 30, colW, 36 + list.length * 52, 14);
+
+  // Column title
+  fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
+  textAlign(CENTER, CENTER);
+  textSize(11);
+  text(title, x + colW / 2, y - 12);
+
+  for (let i = 0; i < list.length; i++) {
+    const item    = list[i];
+    const cardY   = y + i * 52;
+    const card    = { x: x + colW / 2, y: cardY + 22, w: colW, h: 46 };
+    const hover   = isHover(card);
+    const chosen  = selection[slotKey] && selection[slotKey].id === item.id;
+
+    item._card = card;
+
+    // Card background
+    noStroke();
+    if (chosen)     fill(150, 210, 255, 230);
+    else if (hover) fill(235, 245, 255, 230);
+    else            fill(255, 255, 255, 190);
+    rectMode(CORNER);
+    rect(x, cardY, colW, 46, 10);
+
+    // Chosen checkmark border
+    if (chosen) {
+      stroke(80, 160, 230);
+      strokeWeight(2);
+      noFill();
+      rect(x, cardY, colW, 46, 10);
+      noStroke();
+    }
+
+    // CVD-filtered colour swatch
+    const shown = getShownColor(item.c);
+    noStroke();
+    fill(shown[0], shown[1], shown[2]);
+    rectMode(CORNER);
+    rect(x + 8, cardY + 8, 28, 28, 6);
+
+    // Ingredient name
+    fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
+    textAlign(LEFT, CENTER);
+    textSize(12);
+    text(item.label, x + 44, cardY + 18);
+
+    // Act 2 accessibility label: actual colour name shown under swatch
+    if (showLabels) {
+      fill(60, 130, 200);
+      textSize(9.5);
+      text("≈ " + item.colorName, x + 44, cardY + 33);
+    }
+
+    // Chosen checkmark icon
+    if (chosen) {
+      fill(80, 160, 230);
+      textAlign(RIGHT, CENTER);
+      textSize(16);
+      text("✓", x + colW - 8, cardY + 22);
+    }
+
+    cursor(hover ? HAND : ARROW);
+  }
+}
+
+// ── Drink cup preview ─────────────────────────────────────
+function drawCupMochi() {
+  const cx = width - 300;
+  const cy = 355;
+
+  const baseC  = selection.base    ? getShownColor(selection.base.c)    : [230, 230, 230];
+  const syrupC = selection.syrup   ? getShownColor(selection.syrup.c)   : [240, 240, 240];
+  const topC   = selection.topping ? getShownColor(selection.topping.c) : [220, 220, 220];
+
+  // Cup outline
+  stroke(MOCHI.outline[0], MOCHI.outline[1], MOCHI.outline[2]);
+  strokeWeight(3);
+  fill(255, 255, 255, 200);
+  rectMode(CENTER);
+  rect(cx, cy, 110, 150, 18);
+  noStroke();
+
+  // Liquid layers
+  fill(baseC[0],  baseC[1],  baseC[2],  200);
+  rectMode(CENTER);
+  rect(cx, cy + 42, 96, 50, 12);
+
+  fill(syrupC[0], syrupC[1], syrupC[2], 190);
+  rect(cx, cy - 4, 96, 40, 12);
+
+  fill(topC[0],   topC[1],   topC[2],   180);
+  rect(cx, cy - 44, 96, 36, 12);
+
+  // Boba pearls
+  if (selection.topping && selection.topping.id === "boba") {
+    fill(30, 30, 30, 140);
+    noStroke();
+    for (let i = 0; i < 5; i++) {
+      ellipse(cx - 35 + i * 18, cy + 55 + (i % 2) * 7, 12, 12);
+    }
+  }
+
+  // Cup label
+  fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
+  textAlign(CENTER, TOP);
+  textSize(10);
+  text("your drink", cx, cy + 84);
+}
+
+// ── Serve button ──────────────────────────────────────────
+function drawServeButton() {
+  const ready = selection.base && selection.syrup && selection.topping;
+  const hover = isHover(serveBtn);
+
+  rectMode(CENTER);
+  noStroke();
+  if (!ready)      fill(190, 190, 200);
+  else if (hover)  fill(250, 190, 85);
+  else             fill(255, 205, 120);
+
+  rect(serveBtn.x, serveBtn.y, serveBtn.w, serveBtn.h, 16);
+
+  fill(ready ? MOCHI.inkDark[0] : 120, ready ? MOCHI.inkDark[1] : 120, ready ? MOCHI.inkDark[2] : 130);
+  textAlign(CENTER, CENTER);
+  textSize(18);
+  text("SERVE ✓", serveBtn.x, serveBtn.y);
+
+  if (ready) cursor(hover ? HAND : ARROW);
+}
+
+// ── Monster drawing ───────────────────────────────────────
+function drawMochiMonster(x, y, size, idx, mood) {
+  const happyList   = [pinkMonster,        blueMonster,        greenMonster,        orangeMonster];
+  const neutralList = [pinkMonsterNeutral,  blueMonsterNeutral, greenMonsterNeutral, orangeMonsterNeutral];
+  const img = (mood === "active" ? neutralList : happyList)[idx];
+  if (!img) return;
+  imageMode(CENTER);
+  image(img, x, y, size * 2, size * 2);
+  imageMode(CORNER);
+}
+
+// =====================
+// INPUT HANDLERS
+// =====================
+function gameMousePressed() {
+  if (phase !== "MIX") return;
+
+  checkPick("base",    TEA_BASES);
+  checkPick("syrup",   SYRUPS);
+  checkPick("topping", TOPPINGS);
+
+  const ready = selection.base && selection.syrup && selection.topping;
+  if (ready && isHover(serveBtn)) {
+    playSound("click");
+    serveDrink();
+  }
+}
+
+function gameKeyPressed() {
+  if (keyCode === ENTER) {
+    if (phase === "MIX" && selection.base && selection.syrup && selection.topping) {
+      serveDrink();
+    }
+  }
+  if (key === "r" || key === "R") currentScreen = "start";
+}
+
+function checkPick(slotKey, list) {
+  for (const item of list) {
+    if (item._card && isHover(item._card)) {
+      if (!selection[slotKey] || selection[slotKey].id !== item.id) {
+        playSound("click");
+        selection[slotKey] = item;
+      }
+      return;
+    }
+  }
+}
+
+// =====================
+// ROUND LOGIC
+// =====================
+function startRound() {
+  order = {
+    base:    random(TEA_BASES),
+    syrup:   random(SYRUPS),
+    topping: random(TOPPINGS),
+  };
+
+  monsterSwap = floor(random(4));
+
+  selection.base    = null;
+  selection.syrup   = null;
+  selection.topping = null;
+
+  if (act === 3) {
+    // Memory mechanic: 2 sec preview then hide
+    const previewMs = 2200;
+    const timeLimit = max(7000, 12000 - (actRound - 1) * 900);
+    orderPreviewUntil = millis() + previewMs;
+    mixEndsAt         = orderPreviewUntil + timeLimit;
+    phase             = "PREVIEW";
+  } else {
+    // Acts 1 & 2: order always visible; time limit decreases each actRound
+    const timeLimit = max(8000, 14000 - (actRound - 1) * 1000);
+    orderPreviewUntil = millis();
+    mixEndsAt         = millis() + timeLimit;
+    phase             = "MIX";
+  }
+}
+
+function serveDrink() {
+  // Guard: don't double-fire
+  if (currentScreen !== "game") return;
+
+  totalServed++;
+
+  const ok =
+    selection.base    && selection.base.id    === order.base.id    &&
+    selection.syrup   && selection.syrup.id   === order.syrup.id   &&
+    selection.topping && selection.topping.id === order.topping.id;
+
+  if (ok) {
+    totalCorrect++;
+    score += 100;
+    triggerFlash([50, 200, 100]);
+    spawnScoreAnim(100, width / 2, height / 2);
+    playSound("correct");
+
+    endingText = _correctMessage();
+    currentScreen = "win";
+  } else {
+    score = max(0, score - 30);
+    triggerFlash([220, 80, 80]);
+    spawnScoreAnim(-30, width / 2, height / 2);
+    playSound("wrong");
+
+    endingText = _wrongMessage();
+    currentScreen = "lose";
+  }
+}
+
+function _correctMessage() {
+  const msgs = [
+    "Perfect order! The customer tips you.",
+    "Nailed it! +100 points.",
+    "Exactly right! Great work.",
+    "Spot on! Customer is thrilled.",
+    "100% match! Keep it up.",
+  ];
+  return random(msgs);
+}
+
+function _wrongMessage() {
+  if (!selection.base || !selection.syrup || !selection.topping) {
+    return "Time's up! You didn't serve in time.";
+  }
+  // Show what was wrong
+  const parts = [];
+  if (selection.base.id    !== order.base.id)    parts.push("Base should be " + order.base.label);
+  if (selection.syrup.id   !== order.syrup.id)   parts.push("Syrup should be " + order.syrup.label);
+  if (selection.topping.id !== order.topping.id) parts.push("Topping should be " + order.topping.label);
+  return "Wrong order!\n" + parts.join(" · ");
+}
