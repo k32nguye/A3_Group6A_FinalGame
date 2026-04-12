@@ -16,7 +16,7 @@ function drawLose() {
   textSize(34);
   if (titleFont) textFont(titleFont);
   text("WRONG ORDER", width / 2, height / 2 - 140);
-  if (titleFont) textFont("sans-serif");
+  if (bodyFont) textFont(bodyFont);
 
   // Penalty
   fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
@@ -30,11 +30,12 @@ function drawLose() {
   text(endingText, width / 2, height / 2, 580);
 
   // CVD tip
-  const tip = cvdType === "DEUTAN"
-    ? "Tip: Under deuteranopia, reds and greens look very similar in brightness."
-    : cvdType === "PROTAN"
-    ? "Tip: Under protanopia, reds appear dark — check the colour labels if available."
-    : "Tip: Under tritanopia, blue and green are nearly identical. Look for other cues.";
+  const tip =
+    cvdType === "DEUTAN"
+      ? "Tip: Under deuteranopia, reds and greens look very similar in brightness."
+      : cvdType === "PROTAN"
+        ? "Tip: Under protanopia, reds appear dark — check the colour labels if available."
+        : "Tip: Under tritanopia, blue and green are nearly identical. Look for other cues.";
 
   noStroke();
   fill(255, 220, 160, 180);

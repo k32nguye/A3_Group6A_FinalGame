@@ -1,9 +1,10 @@
 // Variables (titleFont, pinkMonster, etc., mainBg) are declared in main.js
-const playBtn  = { x: 0, y: 500, w: 280, h: 86, label: "START GAME" };
+const playBtn = { x: 0, y: 500, w: 280, h: 86, label: "START GAME" };
 const instrBtn = { x: 0, y: 620, w: 280, h: 86, label: "INSTRUCTIONS" };
 
 function preload() {
   titleFont = loadFont("assets/fonts/PressStart2P-Regular.ttf");
+  bodyFont = "Poppins";
 
   // monsters
   pinkMonster = loadImage("assets/pinkmonsterhappy.png");
@@ -20,7 +21,7 @@ function preload() {
 
 function drawStart() {
   // Set button centres first so hover detection works on frame 1
-  playBtn.x  = width / 2;
+  playBtn.x = width / 2;
   instrBtn.x = width / 2;
 
   imageMode(CORNER);

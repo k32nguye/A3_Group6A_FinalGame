@@ -9,10 +9,10 @@ const actBtn = { x: 0, y: 0, w: 280, h: 60 };
 
 const ACT_DATA = [
   {
-    title:    "ACT 1: THE REVELATION",
+    title: "ACT 1: THE REVELATION",
     subtitle: "Deuteranopia  ·  red-green deficiency",
-    colour:   [200, 240, 200],
-    accent:   [80,  160, 80],
+    colour: [200, 240, 200],
+    accent: [80, 160, 80],
     body:
       "Rounds 1–2: Serve orders with normal vision.\n" +
       "You'll learn the ingredient colours at their true hues.\n\n" +
@@ -24,10 +24,10 @@ const ACT_DATA = [
     btnLabel: "BEGIN SHIFT",
   },
   {
-    title:    "ACT 2: LEARNING TO ADAPT",
+    title: "ACT 2: LEARNING TO ADAPT",
     subtitle: "Protanopia  ·  red appears dim & dark",
-    colour:   [255, 230, 200],
-    accent:   [210, 120, 50],
+    colour: [255, 230, 200],
+    accent: [210, 120, 50],
     body:
       "You now see through protanopic eyes. Reds appear much darker.\n\n" +
       "Rounds 1–3: Accessibility labels will appear under each ingredient\n" +
@@ -40,10 +40,10 @@ const ACT_DATA = [
     btnLabel: "CONTINUE SHIFT",
   },
   {
-    title:    "ACT 3: EVERYDAY LIFE",
+    title: "ACT 3: EVERYDAY LIFE",
     subtitle: "Tritanopia  ·  blue and green become confused",
-    colour:   [215, 215, 250],
-    accent:   [80,  100, 200],
+    colour: [215, 215, 250],
+    accent: [80, 100, 200],
     body:
       "The rarest form of CVD. Blue and green look very similar.\n\n" +
       "Memory is back: orders disappear after 2 seconds — memorise fast.\n\n" +
@@ -56,9 +56,9 @@ const ACT_DATA = [
 ];
 
 function drawActIntro() {
-  const d    = ACT_DATA[act - 1];
-  const bg   = d.colour;
-  const acc  = d.accent;
+  const d = ACT_DATA[act - 1];
+  const bg = d.colour;
+  const acc = d.accent;
 
   background(bg[0], bg[1], bg[2]);
 
@@ -74,7 +74,7 @@ function drawActIntro() {
   textAlign(CENTER, TOP);
   textSize(18);
   text(d.title, width / 2, height / 2 - 238);
-  if (titleFont) textFont("sans-serif");
+  if (bodyFont) textFont(bodyFont);
 
   // Subtitle
   fill(100, 105, 120);
@@ -135,32 +135,35 @@ function drawCVDShift() {
   textAlign(CENTER, CENTER);
   text(
     "You have just developed Deuteranopia.\n" +
-    "Your red-green colour perception has shifted.\n\n" +
-    "The next customers will order the same ingredients —\n" +
-    "but can you still identify the right colours?",
-    width / 2, height / 2 - 95, 620
+      "Your red-green colour perception has shifted.\n\n" +
+      "The next customers will order the same ingredients —\n" +
+      "but can you still identify the right colours?",
+    width / 2,
+    height / 2 - 95,
+    620,
   );
 
   // Side-by-side comparison strip
   const colours = [
-    { label: "Strawberry", c: [225, 80,  105] },
-    { label: "Honeydew",   c: [105, 210, 120] },
-    { label: "Green Tea",  c: [80,  155, 90]  },
-    { label: "Mango",      c: [245, 175, 60]  },
+    { label: "Strawberry", c: [225, 80, 105] },
+    { label: "Honeydew", c: [105, 210, 120] },
+    { label: "Green Tea", c: [80, 155, 90] },
+    { label: "Mango", c: [245, 175, 60] },
   ];
 
   const stripY = height / 2 + 40;
-  const swW    = 120;
-  const gap    = 14;
-  const totalW = colours.length * (swW * 2 + gap + 10) + (colours.length - 1) * 20;
-  let   sx     = width / 2 - totalW / 2;
+  const swW = 120;
+  const gap = 14;
+  const totalW =
+    colours.length * (swW * 2 + gap + 10) + (colours.length - 1) * 20;
+  let sx = width / 2 - totalW / 2;
 
   // Section headers
   noStroke();
   fill(180, 220, 180);
   textSize(12);
   textAlign(CENTER, TOP);
-  text("BEFORE (normal)",  sx + swW / 2,               stripY - 28);
+  text("BEFORE (normal)", sx + swW / 2, stripY - 28);
   fill(220, 130, 130);
   text("AFTER (your vision)", sx + swW + gap + swW / 2, stripY - 28);
 
@@ -212,9 +215,9 @@ function cvdShiftMousePressed() {
 
 const DEBRIEF_DATA = [
   {
-    title:   "DEBRIEF: DEUTERANOPIA",
-    colour:  [200, 240, 200],
-    accent:  [60, 150, 60],
+    title: "DEBRIEF: DEUTERANOPIA",
+    colour: [200, 240, 200],
+    accent: [60, 150, 60],
     points: [
       "You experienced deuteranopia — the most common form of CVD.",
       "Red and green collapsed into similar brownish tones.",
@@ -223,9 +226,9 @@ const DEBRIEF_DATA = [
     ],
   },
   {
-    title:   "DEBRIEF: PROTANOPIA",
-    colour:  [255, 230, 200],
-    accent:  [200, 110, 40],
+    title: "DEBRIEF: PROTANOPIA",
+    colour: [255, 230, 200],
+    accent: [200, 110, 40],
     points: [
       "Protanopia makes reds appear dark brown or near-black.",
       "Accessibility labels helped you identify ingredients by name.",
@@ -236,7 +239,7 @@ const DEBRIEF_DATA = [
 ];
 
 function drawActDebrief() {
-  const d  = DEBRIEF_DATA[debriefAct - 1];
+  const d = DEBRIEF_DATA[debriefAct - 1];
   const bg = d.colour;
   const ac = d.accent;
 
@@ -295,27 +298,27 @@ function actDebriefMousePressed() {
 
 function setupScenario(type) {
   scenarioAnswered = false;
-  scenarioCorrect  = false;
+  scenarioCorrect = false;
 
   if (type === "traffic") {
     scenarioData = {
-      type:     "traffic",
+      type: "traffic",
       question: "Which traffic light means GO?",
       options: [
-        { label: "Top",    c: [220, 50,  50],  correct: false },
-        { label: "Middle", c: [230, 180, 40],  correct: false },
-        { label: "Bottom", c: [50,  180, 80],  correct: true  },
+        { label: "Top", c: [220, 50, 50], correct: false },
+        { label: "Middle", c: [230, 180, 40], correct: false },
+        { label: "Bottom", c: [50, 180, 80], correct: true },
       ],
       fact: "People with CVD often rely on POSITION (not colour) to read traffic lights.\nGreen is always at the bottom — a design choice that helps CVD users.",
     };
   } else {
     scenarioData = {
-      type:     "pills",
+      type: "pills",
       question: "Take the BLUE pill for your headache. Which one?",
       options: [
-        { label: "A", c: [80,  120, 220], correct: true  }, // blue
-        { label: "B", c: [80,  190, 120], correct: false }, // green
-        { label: "C", c: [230, 90,  90],  correct: false }, // red
+        { label: "A", c: [80, 120, 220], correct: true }, // blue
+        { label: "B", c: [80, 190, 120], correct: false }, // green
+        { label: "C", c: [230, 90, 90], correct: false }, // red
       ],
       fact: "Under tritanopia, blue and green look almost identical.\nMany CVD users rely on shape, packaging text, and position — not pill colour.\nThis is why medication design must never use colour alone.",
     };
@@ -350,11 +353,11 @@ function drawScenario() {
   text(scenarioData.question, width / 2, 110, width - 80);
 
   // Draw options
-  const opts    = scenarioData.options;
-  const optW    = 130;
-  const optH    = scenarioData.type === "traffic" ? 200 : 130;
+  const opts = scenarioData.options;
+  const optW = 130;
+  const optH = scenarioData.type === "traffic" ? 200 : 130;
   const spacing = 200;
-  const startX  = width / 2 - (opts.length - 1) * spacing / 2;
+  const startX = width / 2 - ((opts.length - 1) * spacing) / 2;
 
   for (let i = 0; i < opts.length; i++) {
     const ox = startX + i * spacing;
@@ -363,7 +366,7 @@ function drawScenario() {
     opts[i]._box = { x: ox, y: oy + optH / 2, w: optW, h: optH };
 
     const hovering = !scenarioAnswered && isHover(opts[i]._box);
-    const cvdCol   = applyCVD(opts[i].c);
+    const cvdCol = applyCVD(opts[i].c);
 
     if (scenarioData.type === "traffic") {
       // Traffic light column for this option
@@ -376,18 +379,21 @@ function drawScenario() {
       for (let j = 0; j < 3; j++) {
         const isActive = j === i;
         if (isActive) fill(cvdCol[0], cvdCol[1], cvdCol[2]);
-        else          fill(40, 40, 40);
+        else fill(40, 40, 40);
         ellipse(ox, lightY[j], 46, 46);
       }
     } else {
       // Pill shape
       noStroke();
       if (scenarioAnswered && opts[i].correct) {
-        stroke(60, 200, 80); strokeWeight(4);
+        stroke(60, 200, 80);
+        strokeWeight(4);
       } else if (scenarioAnswered && !opts[i].correct) {
-        stroke(200, 80, 80); strokeWeight(3);
+        stroke(200, 80, 80);
+        strokeWeight(3);
       } else if (hovering) {
-        stroke(100, 130, 220); strokeWeight(3);
+        stroke(100, 130, 220);
+        strokeWeight(3);
       }
       fill(cvdCol[0], cvdCol[1], cvdCol[2]);
       rectMode(CENTER);
@@ -401,7 +407,7 @@ function drawScenario() {
     textSize(13);
     text(opts[i].label, ox, oy + optH + 10);
 
-    cursor((!scenarioAnswered && hovering) ? HAND : ARROW);
+    cursor(!scenarioAnswered && hovering ? HAND : ARROW);
   }
 
   // Answered state
@@ -415,7 +421,11 @@ function drawScenario() {
     fill(scenarioCorrect ? [40, 160, 80] : [200, 80, 80]);
     textAlign(CENTER, TOP);
     textSize(15);
-    text(scenarioCorrect ? "Correct!" : "Not quite!", width / 2, height / 2 + 58);
+    text(
+      scenarioCorrect ? "Correct!" : "Not quite!",
+      width / 2,
+      height / 2 + 58,
+    );
 
     fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
     textSize(12);
@@ -445,7 +455,7 @@ function scenarioMousePressed() {
   for (const opt of scenarioData.options) {
     if (opt._box && isHover(opt._box)) {
       scenarioAnswered = true;
-      scenarioCorrect  = opt.correct;
+      scenarioCorrect = opt.correct;
       playSound(opt.correct ? "correct" : "wrong");
       return;
     }
@@ -465,9 +475,11 @@ function _drawActBtn(btn, label, accent) {
   rectMode(CENTER);
   const hov = isHover(btn);
   noStroke();
-  fill(hov ? accent[0] * 0.9 : accent[0],
-       hov ? accent[1] * 0.9 : accent[1],
-       hov ? accent[2] * 0.9 : accent[2]);
+  fill(
+    hov ? accent[0] * 0.9 : accent[0],
+    hov ? accent[1] * 0.9 : accent[1],
+    hov ? accent[2] * 0.9 : accent[2],
+  );
   rect(btn.x, btn.y, btn.w, btn.h, 16);
   fill(255);
   textAlign(CENTER, CENTER);

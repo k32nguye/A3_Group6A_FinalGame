@@ -5,34 +5,34 @@ let currentScreen = "start";
 let endingText = "";
 
 // Act system
-let act = 1;           // 1, 2, or 3
-let actRound = 1;      // round within current act (1–5)
-let globalRound = 1;   // overall round number (1–15)
-let debriefAct = 1;    // which act's debrief is being shown
+let act = 1; // 1, 2, or 3
+let actRound = 1; // round within current act (1–5)
+let globalRound = 1; // overall round number (1–15)
+let debriefAct = 1; // which act's debrief is being shown
 
 // Gameplay state
 let score = 0;
 let totalCorrect = 0;
 let totalServed = 0;
 
-let order = null;         // { base, syrup, topping }
+let order = null; // { base, syrup, topping }
 let orderPreviewUntil = 0;
 let mixEndsAt = 0;
-let phase = "MIX";        // "PREVIEW" or "MIX"
+let phase = "MIX"; // "PREVIEW" or "MIX"
 let selection = { base: null, syrup: null, topping: null };
 
 // CVD state (controlled per act — not toggled by player)
 let visionMode = "NORMAL"; // "NORMAL" or "CVD"
-let cvdType    = "DEUTAN"; // "DEUTAN", "PROTAN", "TRITAN"
-let showLabels = false;    // Act 2 accessibility mechanic
+let cvdType = "DEUTAN"; // "DEUTAN", "PROTAN", "TRITAN"
+let showLabels = false; // Act 2 accessibility mechanic
 
 // Act 3 scenario state
-let scenarioData     = null;
+let scenarioData = null;
 let scenarioAnswered = false;
-let scenarioCorrect  = false;
+let scenarioCorrect = false;
 
 // Flash feedback (correct/wrong visual cue)
-let flashCol   = null;
+let flashCol = null;
 let flashUntil = 0;
 
 // Score fly-up animations
@@ -43,19 +43,23 @@ let monsterSwap = 0;
 
 // Monster images (loaded in preload, start.js)
 let pinkMonster, blueMonster, greenMonster, orangeMonster;
-let pinkMonsterNeutral, blueMonsterNeutral, greenMonsterNeutral, orangeMonsterNeutral;
+let pinkMonsterNeutral,
+  blueMonsterNeutral,
+  greenMonsterNeutral,
+  orangeMonsterNeutral;
 let mainBg;
 let titleFont;
+let bodyFont;
 
 // Mochi colour palette (shared across screens)
 const MOCHI = {
-  sky:          [233, 246, 255],
-  hills:        [255, 210, 225],
-  counterTop:   [200, 245, 235],
+  sky: [233, 246, 255],
+  hills: [255, 210, 225],
+  counterTop: [200, 245, 235],
   counterFront: [170, 230, 220],
-  outline:      [40,  50,  70],
-  inkDark:      [30,  35,  45],
-  accent:       [255, 205, 120],
+  outline: [40, 50, 70],
+  inkDark: [30, 35, 45],
+  accent: [255, 205, 120],
 };
 
 // =====================
@@ -63,22 +67,45 @@ const MOCHI = {
 // =====================
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  if (titleFont) textFont(titleFont);
+  if (bodyFont) textFont(bodyFont);
+  else textFont("Poppins");
 }
 
 function draw() {
   switch (currentScreen) {
-    case "start":       drawStart();        break;
-    case "instr":       drawInstr();        break;
-    case "tutorial":    drawTutorial();     break;
-    case "act_intro":   drawActIntro();     break;
-    case "game":        drawGame();         break;
-    case "cvd_shift":   drawCVDShift();     break;
-    case "act_debrief": drawActDebrief();   break;
-    case "scenario":    drawScenario();     break;
-    case "win":         drawWin();          break;
-    case "lose":        drawLose();         break;
-    case "endgame":     drawEndgame();      break;
+    case "start":
+      drawStart();
+      break;
+    case "instr":
+      drawInstr();
+      break;
+    case "tutorial":
+      drawTutorial();
+      break;
+    case "act_intro":
+      drawActIntro();
+      break;
+    case "game":
+      drawGame();
+      break;
+    case "cvd_shift":
+      drawCVDShift();
+      break;
+    case "act_debrief":
+      drawActDebrief();
+      break;
+    case "scenario":
+      drawScenario();
+      break;
+    case "win":
+      drawWin();
+      break;
+    case "lose":
+      drawLose();
+      break;
+    case "endgame":
+      drawEndgame();
+      break;
   }
   drawFlash();
   drawScoreAnims();
@@ -87,34 +114,78 @@ function draw() {
 function mousePressed() {
   unlockAudio();
   switch (currentScreen) {
-    case "start":       startMousePressed();       break;
-    case "instr":       instrMousePressed();       break;
-    case "tutorial":    tutMousePressed();         break;
-    case "act_intro":   actIntroMousePressed();    break;
-    case "game":        gameMousePressed();        break;
-    case "cvd_shift":   cvdShiftMousePressed();    break;
-    case "act_debrief": actDebriefMousePressed();  break;
-    case "scenario":    scenarioMousePressed();    break;
-    case "win":         winMousePressed();         break;
-    case "lose":        loseMousePressed();        break;
-    case "endgame":     endgameMousePressed();     break;
+    case "start":
+      startMousePressed();
+      break;
+    case "instr":
+      instrMousePressed();
+      break;
+    case "tutorial":
+      tutMousePressed();
+      break;
+    case "act_intro":
+      actIntroMousePressed();
+      break;
+    case "game":
+      gameMousePressed();
+      break;
+    case "cvd_shift":
+      cvdShiftMousePressed();
+      break;
+    case "act_debrief":
+      actDebriefMousePressed();
+      break;
+    case "scenario":
+      scenarioMousePressed();
+      break;
+    case "win":
+      winMousePressed();
+      break;
+    case "lose":
+      loseMousePressed();
+      break;
+    case "endgame":
+      endgameMousePressed();
+      break;
   }
 }
 
 function keyPressed() {
   unlockAudio();
   switch (currentScreen) {
-    case "start":       startKeyPressed();         break;
-    case "instr":       instrKeyPressed();         break;
-    case "tutorial":    tutKeyPressed();           break;
-    case "act_intro":   actIntroMousePressed();    break;
-    case "game":        gameKeyPressed();          break;
-    case "cvd_shift":   cvdShiftMousePressed();    break;
-    case "act_debrief": actDebriefMousePressed();  break;
-    case "scenario":    scenarioKeyPressed();      break;
-    case "win":         winMousePressed();         break;
-    case "lose":        loseMousePressed();        break;
-    case "endgame":     endgameMousePressed();     break;
+    case "start":
+      startKeyPressed();
+      break;
+    case "instr":
+      instrKeyPressed();
+      break;
+    case "tutorial":
+      tutKeyPressed();
+      break;
+    case "act_intro":
+      actIntroMousePressed();
+      break;
+    case "game":
+      gameKeyPressed();
+      break;
+    case "cvd_shift":
+      cvdShiftMousePressed();
+      break;
+    case "act_debrief":
+      actDebriefMousePressed();
+      break;
+    case "scenario":
+      scenarioKeyPressed();
+      break;
+    case "win":
+      winMousePressed();
+      break;
+    case "lose":
+      loseMousePressed();
+      break;
+    case "endgame":
+      endgameMousePressed();
+      break;
   }
 }
 
@@ -131,7 +202,7 @@ function isHover(box) {
 }
 
 function triggerFlash(col) {
-  flashCol   = col;
+  flashCol = col;
   flashUntil = millis() + 350;
 }
 
@@ -150,11 +221,14 @@ function spawnScoreAnim(val, x, y) {
 
 function drawScoreAnims() {
   for (let i = scoreAnims.length - 1; i >= 0; i--) {
-    const a   = scoreAnims[i];
+    const a = scoreAnims[i];
     const age = millis() - a.born;
-    if (age > 900) { scoreAnims.splice(i, 1); continue; }
+    if (age > 900) {
+      scoreAnims.splice(i, 1);
+      continue;
+    }
     const alpha = map(age, 500, 900, 255, 0);
-    const yOff  = map(age, 0,   900, 0, -60);
+    const yOff = map(age, 0, 900, 0, -60);
     noStroke();
     fill(a.val > 0 ? 50 : 200, a.val > 0 ? 180 : 50, 80, alpha);
     textAlign(CENTER, CENTER);
@@ -167,18 +241,18 @@ function drawScoreAnims() {
 // ACT FLOW
 // =====================
 function startNewGame() {
-  score         = 0;
-  totalCorrect  = 0;
-  totalServed   = 0;
-  act           = 1;
-  actRound      = 1;
-  globalRound   = 1;
-  visionMode    = "NORMAL";
-  cvdType       = "DEUTAN";
-  showLabels    = false;
-  scenarioData  = null;
-  scoreAnims    = [];
-  startTutorial();        // sets up tutorial state (defined in tutorial.js)
+  score = 0;
+  totalCorrect = 0;
+  totalServed = 0;
+  act = 1;
+  actRound = 1;
+  globalRound = 1;
+  visionMode = "NORMAL";
+  cvdType = "DEUTAN";
+  showLabels = false;
+  scenarioData = null;
+  scoreAnims = [];
+  startTutorial(); // sets up tutorial state (defined in tutorial.js)
   currentScreen = "tutorial";
 }
 
@@ -193,16 +267,16 @@ function advanceAfterRound() {
     if (actRound === 3) {
       // Dramatic CVD shift before round 3
       visionMode = "CVD";
-      cvdType    = "DEUTAN";
+      cvdType = "DEUTAN";
       currentScreen = "cvd_shift";
       return;
     }
     if (actRound > 5) {
       debriefAct = 1;
-      act        = 2;
-      actRound   = 1;
+      act = 2;
+      actRound = 1;
       visionMode = "CVD";
-      cvdType    = "PROTAN";
+      cvdType = "PROTAN";
       showLabels = true;
       playSound("levelup");
       currentScreen = "act_debrief";
@@ -213,13 +287,13 @@ function advanceAfterRound() {
   // ── Act 2 (rounds 6–10) ─────────────────────────────────
   if (act === 2) {
     // Labels help in rounds 1–3, then disappear to show the challenge
-    showLabels = (actRound <= 3);
+    showLabels = actRound <= 3;
     if (actRound > 5) {
       debriefAct = 2;
-      act        = 3;
-      actRound   = 1;
+      act = 3;
+      actRound = 1;
       visionMode = "CVD";
-      cvdType    = "TRITAN";
+      cvdType = "TRITAN";
       showLabels = false;
       playSound("levelup");
       currentScreen = "act_debrief";

@@ -16,7 +16,7 @@ function drawWin() {
   textSize(36);
   if (titleFont) textFont(titleFont);
   text("CORRECT!", width / 2, height / 2 - 130);
-  if (titleFont) textFont("sans-serif");
+  if (bodyFont) textFont(bodyFont);
 
   // Score
   fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
@@ -35,9 +35,14 @@ function drawWin() {
   textSize(12);
   text(
     roundsLeft > 0
-      ? roundsLeft + " round" + (roundsLeft === 1 ? "" : "s") + " left in Act " + act
+      ? roundsLeft +
+          " round" +
+          (roundsLeft === 1 ? "" : "s") +
+          " left in Act " +
+          act
       : "Act " + act + " complete!",
-    width / 2, height / 2 + 68
+    width / 2,
+    height / 2 + 68,
   );
 
   // Continue prompt

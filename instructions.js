@@ -7,12 +7,12 @@ const instrBackBtn = { x: 0, y: 0, w: 220, h: 54, label: "BACK" };
 
 // Colour pairs used in the visual comparison demo
 const DEMO_COLOURS = [
-  { name: "Red",    rgb: [220, 60,  60]  },
-  { name: "Green",  rgb: [60,  180, 80]  },
-  { name: "Blue",   rgb: [70,  120, 220] },
-  { name: "Yellow", rgb: [240, 200, 50]  },
-  { name: "Purple", rgb: [170, 80,  210] },
-  { name: "Orange", rgb: [240, 140, 50]  },
+  { name: "Red", rgb: [220, 60, 60] },
+  { name: "Green", rgb: [60, 180, 80] },
+  { name: "Blue", rgb: [70, 120, 220] },
+  { name: "Yellow", rgb: [240, 200, 50] },
+  { name: "Purple", rgb: [170, 80, 210] },
+  { name: "Orange", rgb: [240, 140, 50] },
 ];
 
 function drawInstr() {
@@ -29,7 +29,7 @@ function drawInstr() {
   textSize(22);
   if (titleFont) textFont(titleFont);
   text("COLOUR VISION DEFICIENCY", 40, 40);
-  if (titleFont) textFont("sans-serif");
+  if (bodyFont) textFont(bodyFont);
 
   // Back button
   instrBackBtn.x = width - 140;
@@ -40,7 +40,7 @@ function drawInstr() {
   // ── Section 1: What is CVD? ─────────────────────────────
   const col1 = 40;
   const col2 = width / 2 + 20;
-  let  y     = 105;
+  let y = 105;
 
   // Description box
   noStroke();
@@ -54,9 +54,12 @@ function drawInstr() {
   textLeading(22);
   text(
     "Colour Vision Deficiency (CVD) affects how people perceive colour. It is not the same as\n" +
-    "being colour blind — most people with CVD can see colour, but struggle to distinguish\n" +
-    "certain hues. About 8% of males and 0.5% of females are born with some form of CVD.",
-    col1 + 16, y + 14, width - 112, 90
+      "being colour blind — most people with CVD can see colour, but struggle to distinguish\n" +
+      "certain hues. About 8% of males and 0.5% of females are born with some form of CVD.",
+    col1 + 16,
+    y + 14,
+    width - 112,
+    90,
   );
 
   // ── Section 2: Side-by-side colour comparison ───────────
@@ -66,8 +69,8 @@ function drawInstr() {
   noStroke();
   fill(255, 255, 255, 210);
   rectMode(CORNER);
-  rect(col1, y, (width / 2) - 60, 330, 14);
-  rect(col2, y, (width / 2) - 60, 330, 14);
+  rect(col1, y, width / 2 - 60, 330, 14);
+  rect(col2, y, width / 2 - 60, 330, 14);
 
   // Section headers
   fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
@@ -84,12 +87,12 @@ function drawInstr() {
 
   // Colour swatches
   const swatchSize = 34;
-  const swatchGap  = 50;
-  const startY     = y + 70;
+  const swatchGap = 50;
+  const startY = y + 70;
 
   for (let i = 0; i < DEMO_COLOURS.length; i++) {
-    const sx  = startY + i * swatchGap;
-    const c   = DEMO_COLOURS[i].rgb;
+    const sx = startY + i * swatchGap;
+    const c = DEMO_COLOURS[i].rgb;
     const cvd = _simulateDEUTAN(c);
 
     // Normal swatch (left panel)
@@ -122,9 +125,24 @@ function drawInstr() {
   rect(col1, y, width - 80, 105, 14);
 
   const types = [
-    { name: "Deuteranopia",  desc: "Red & green look similar",    pct: "~5% of males",   col: [100, 160, 80]  },
-    { name: "Protanopia",    desc: "Reds appear dark, dull",       pct: "~1% of males",   col: [160, 100, 80]  },
-    { name: "Tritanopia",    desc: "Blue & green become confused", pct: "~0.01% of people", col: [80, 120, 200]  },
+    {
+      name: "Deuteranopia",
+      desc: "Red & green look similar",
+      pct: "~5% of males",
+      col: [100, 160, 80],
+    },
+    {
+      name: "Protanopia",
+      desc: "Reds appear dark, dull",
+      pct: "~1% of males",
+      col: [160, 100, 80],
+    },
+    {
+      name: "Tritanopia",
+      desc: "Blue & green become confused",
+      pct: "~0.01% of people",
+      col: [80, 120, 200],
+    },
   ];
 
   for (let i = 0; i < types.length; i++) {
@@ -139,7 +157,7 @@ function drawInstr() {
     textSize(11);
     fill(70, 75, 90);
     text(types[i].desc, tx + 10, y + 36);
-    text(types[i].pct,  tx + 10, y + 54);
+    text(types[i].pct, tx + 10, y + 54);
   }
 
   // ── How to Play summary ─────────────────────────────────
@@ -155,8 +173,10 @@ function drawInstr() {
   textLeading(20);
   text(
     "HOW TO PLAY:  The customer order shows TRUE colours.  Your ingredient bins show what a CVD person sees.\n" +
-    "Match the order to the right ingredients — and experience what 300 million people navigate every day.",
-    col1 + 16, y + 28, width - 112
+      "Match the order to the right ingredients — and experience what 300 million people navigate every day.",
+    col1 + 16,
+    y + 28,
+    width - 112,
   );
 }
 
@@ -187,7 +207,9 @@ function _drawSmallBtn(btn) {
 
 // Lightweight DEUTAN simulation for display (not the full CVD pipeline)
 function _simulateDEUTAN(rgb) {
-  let r = rgb[0], g = rgb[1], b = rgb[2];
+  let r = rgb[0],
+    g = rgb[1],
+    b = rgb[2];
   const rg = (r + g) / 2;
   r = lerp(r, rg, 0.82);
   g = lerp(g, rg, 0.92);

@@ -18,14 +18,15 @@ function drawEndgame() {
   textAlign(CENTER, CENTER);
   textSize(20);
   text("SHIFT COMPLETE!", width / 2, 45);
-  if (titleFont) textFont("sans-serif");
+  if (bodyFont) textFont(bodyFont);
 
   // Stats row
-  const accuracy = totalServed > 0 ? round((totalCorrect / totalServed) * 100) : 0;
+  const accuracy =
+    totalServed > 0 ? round((totalCorrect / totalServed) * 100) : 0;
   const statLabels = [
     { label: "Final Score", val: score },
-    { label: "Accuracy",    val: accuracy + "%" },
-    { label: "Correct",     val: totalCorrect + "/" + totalServed },
+    { label: "Accuracy", val: accuracy + "%" },
+    { label: "Correct", val: totalCorrect + "/" + totalServed },
   ];
 
   noStroke();
@@ -47,22 +48,22 @@ function drawEndgame() {
   // What you learned cards
   const cards = [
     {
-      act:    "Act 1 · Deuteranopia",
+      act: "Act 1 · Deuteranopia",
       colour: [180, 230, 180],
       accent: [60, 150, 60],
-      fact:   "Red & green look similar.\n~8% of males are born with this form of CVD.",
+      fact: "Red & green look similar.\n~8% of males are born with this form of CVD.",
     },
     {
-      act:    "Act 2 · Protanopia",
+      act: "Act 2 · Protanopia",
       colour: [255, 225, 195],
       accent: [200, 110, 40],
-      fact:   "Reds appear dark & dim.\nAccessibility labels restore independence — colour alone is not enough.",
+      fact: "Reds appear dark & dim.\nAccessibility labels restore independence — colour alone is not enough.",
     },
     {
-      act:    "Act 3 · Tritanopia",
+      act: "Act 3 · Tritanopia",
       colour: [215, 215, 250],
       accent: [80, 100, 200],
-      fact:   "Blue & green become indistinguishable.\nCVD affects traffic lights, medication, food, and navigation every day.",
+      fact: "Blue & green become indistinguishable.\nCVD affects traffic lights, medication, food, and navigation every day.",
     },
   ];
 
@@ -102,8 +103,10 @@ function drawEndgame() {
   textLeading(24);
   text(
     "Over 300 million people experience colour vision deficiency worldwide.\n" +
-    "Accessible design — labels, patterns, position cues — makes the world more inclusive for everyone.",
-    width / 2, 440, width - 120
+      "Accessible design — labels, patterns, position cues — makes the world more inclusive for everyone.",
+    width / 2,
+    440,
+    width - 120,
   );
 
   // Play again button
