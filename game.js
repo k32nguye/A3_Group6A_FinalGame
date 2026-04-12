@@ -142,10 +142,11 @@ function drawGameHUD() {
 
   // Act 2: label status indicator
   if (act === 2) {
-    fill(showLabels ? [60, 160, 90] : [200, 80, 80]);
-    textSize(11);
+    const lblCol = showLabels ? [60, 160, 90] : [200, 80, 80];
+    fill(lblCol[0], lblCol[1], lblCol[2]);
+    textSize(12);
     textAlign(RIGHT, CENTER);
-    text(showLabels ? "Accessibility Labels: ON" : "Accessibility Labels: OFF", width - 16, 58);
+    text(showLabels ? "Accessibility Labels: ON" : "Accessibility Labels: OFF", width - 16, 52);
   }
 }
 

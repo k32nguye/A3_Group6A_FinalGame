@@ -70,6 +70,7 @@ function draw() {
   switch (currentScreen) {
     case "start":       drawStart();        break;
     case "instr":       drawInstr();        break;
+    case "tutorial":    drawTutorial();     break;
     case "act_intro":   drawActIntro();     break;
     case "game":        drawGame();         break;
     case "cvd_shift":   drawCVDShift();     break;
@@ -88,6 +89,7 @@ function mousePressed() {
   switch (currentScreen) {
     case "start":       startMousePressed();       break;
     case "instr":       instrMousePressed();       break;
+    case "tutorial":    tutMousePressed();         break;
     case "act_intro":   actIntroMousePressed();    break;
     case "game":        gameMousePressed();        break;
     case "cvd_shift":   cvdShiftMousePressed();    break;
@@ -104,6 +106,7 @@ function keyPressed() {
   switch (currentScreen) {
     case "start":       startKeyPressed();         break;
     case "instr":       instrKeyPressed();         break;
+    case "tutorial":    tutKeyPressed();           break;
     case "act_intro":   actIntroMousePressed();    break;
     case "game":        gameKeyPressed();          break;
     case "cvd_shift":   cvdShiftMousePressed();    break;
@@ -175,7 +178,8 @@ function startNewGame() {
   showLabels    = false;
   scenarioData  = null;
   scoreAnims    = [];
-  currentScreen = "act_intro";
+  startTutorial();        // sets up tutorial state (defined in tutorial.js)
+  currentScreen = "tutorial";
 }
 
 // Called by win/lose screens after the player clicks to continue.
