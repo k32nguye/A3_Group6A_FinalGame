@@ -75,11 +75,13 @@ function drawGame() {
   }
 
   if (phase === "PREVIEW") {
-    drawOrderArea(true);          // show order with TRUE colours
+    drawOrderArea(true);          // always show order during preview
     drawPreviewBanner();
     if (millis() > orderPreviewUntil) phase = "MIX";
   } else {
-    drawOrderArea(act === 3);     // Act 3: order hidden after preview (pass false to hide)
+    // Acts 1 & 2: order stays visible (colour ID challenge)
+    // Act 3 MIX phase: order is hidden (memory challenge)
+    drawOrderArea(act !== 3);
     drawWorkArea();
   }
 

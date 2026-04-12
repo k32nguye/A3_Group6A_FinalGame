@@ -1,16 +1,6 @@
-const playBtn = { y: 500, w: 280, h: 86, label: "START GAME" };
-const instrBtn = { y: 620, w: 280, h: 86, label: "INSTRUCTIONS" };
-
-let titleFont;
-let pinkMonster;
-let blueMonster;
-let greenMonster;
-let orangeMonster;
-let pinkMonsterNeutral;
-let blueMonsterNeutral;
-let greenMonsterNeutral;
-let orangeMonsterNeutral;
-let mainBg;
+// Variables (titleFont, pinkMonster, etc., mainBg) are declared in main.js
+const playBtn  = { x: 0, y: 500, w: 280, h: 86, label: "START GAME" };
+const instrBtn = { x: 0, y: 620, w: 280, h: 86, label: "INSTRUCTIONS" };
 
 function preload() {
   titleFont = loadFont("assets/fonts/PressStart2P-Regular.ttf");
@@ -29,16 +19,18 @@ function preload() {
 }
 
 function drawStart() {
+  // Set button centres first so hover detection works on frame 1
+  playBtn.x  = width / 2;
+  instrBtn.x = width / 2;
+
   imageMode(CORNER);
   image(mainBg, 0, 0, width, height);
   noStroke();
-  textFont(titleFont);
+  if (titleFont) textFont(titleFont);
 
   // Buttons
   drawMenuButton(playBtn, true);
-  playBtn.x = width / 2;
   drawMenuButton(instrBtn, false);
-  instrBtn.x = width / 2;
 
   cursor(isHover(playBtn) || isHover(instrBtn) ? HAND : ARROW);
 
