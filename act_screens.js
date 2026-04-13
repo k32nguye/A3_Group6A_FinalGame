@@ -14,10 +14,10 @@ const ACT_DATA = [
     colour: [200, 240, 200],
     accent: [80, 160, 80],
     body:
-      "Rounds 1–2: Serve orders with normal vision.\n" +
+      "Rounds 1-2: Serve orders with normal vision.\n" +
       "You'll learn the ingredient colours at their true hues.\n\n" +
       "Round 3: Something will change.\n\n" +
-      "Your goal: match the customer's order to the right ingredients.",
+      "Goal: match the customer's order to the right ingredients.",
     fact:
       "~8% of males and 0.5% of females are born with some form\n" +
       "of colour vision deficiency. Deuteranopia is the most common type.",
@@ -59,6 +59,8 @@ function drawActIntro() {
   const d = ACT_DATA[act - 1];
   const bg = d.colour;
   const acc = d.accent;
+  const introTextYOffset = act === 1 ? 40 : 0;
+  const introBodyGap = act === 1 ? 30 : 0;
 
   background(bg[0], bg[1], bg[2]);
 
@@ -73,35 +75,51 @@ function drawActIntro() {
   fill(acc[0], acc[1], acc[2]);
   textAlign(CENTER, TOP);
   textSize(18);
-  text(d.title, width / 2, height / 2 - 238);
+  text(d.title, width / 2, height / 2 - 238 + introTextYOffset);
   if (bodyFont) textFont(bodyFont);
 
   // Subtitle
   fill(100, 105, 120);
   textSize(13);
-  text(d.subtitle, width / 2, height / 2 - 206);
+  text(d.subtitle, width / 2, height / 2 - 206 + introTextYOffset);
 
   // Body
   fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
   textSize(14);
   textLeading(24);
   textAlign(CENTER, TOP);
-  text(d.body, width / 2, height / 2 - 178, 620);
+  text(
+    d.body,
+    width / 2,
+    height / 2 - 178 + introTextYOffset + introBodyGap,
+    620,
+  );
 
   // Fact box
   noStroke();
   fill(acc[0], acc[1], acc[2], 30);
   rectMode(CENTER);
-  rect(width / 2, height / 2 + 88, 620, 76, 12);
+  rect(
+    width / 2,
+    height / 2 + 88 + introTextYOffset + introBodyGap,
+    620,
+    76,
+    12,
+  );
   fill(acc[0], acc[1], acc[2]);
   textSize(11);
   textLeading(19);
   textAlign(CENTER, CENTER);
-  text("DID YOU KNOW?\n" + d.fact, width / 2, height / 2 + 88, 590);
+  text(
+    "DID YOU KNOW?\n" + d.fact,
+    width / 2,
+    height / 2 + 88 + introTextYOffset + introBodyGap,
+    590,
+  );
 
   // Button
   actBtn.x = width / 2;
-  actBtn.y = height / 2 + 208;
+  actBtn.y = height / 2 + 208 + introTextYOffset + introBodyGap;
   _drawActBtn(actBtn, d.btnLabel, acc);
 
   cursor(isHover(actBtn) ? HAND : ARROW);
@@ -134,9 +152,9 @@ function drawCVDShift() {
   textLeading(26);
   textAlign(CENTER, CENTER);
   text(
-    "You have just developed Deuteranopia.\n" +
-      "Your red-green colour perception has shifted.\n\n" +
-      "The next customers will order the same ingredients —\n" +
+    "From this point on, you’ll see colours through a Deuteranopia perspective.\n" +
+      "Red and green shades may look much more similar.\n\n" +
+      "The next customers will order the same ingredients,\n" +
       "but can you still identify the right colours?",
     width / 2,
     height / 2 - 95,
@@ -163,9 +181,9 @@ function drawCVDShift() {
   fill(180, 220, 180);
   textSize(12);
   textAlign(CENTER, TOP);
-  text("BEFORE (normal)", sx + swW / 2, stripY - 28);
+  text("ORDER (true colour)", sx + swW / 2, stripY - 28);
   fill(220, 130, 130);
-  text("AFTER (your vision)", sx + swW + gap + swW / 2, stripY - 28);
+  text("YOUR VIEW", sx + swW + gap + swW / 2, stripY - 28);
 
   for (const col of colours) {
     const cvd = applyCVD(col.c);
@@ -195,10 +213,23 @@ function drawCVDShift() {
     sx += swW * 2 + gap + 30;
   }
 
+  // Practical hint so players know how to match ingredients
+  fill(220, 220, 235);
+  textAlign(CENTER, TOP);
+  textSize(12);
+  textLeading(18);
+  text(
+    "How to match orders: compare with the true-colour order bubble, then use shape symbols\n" +
+      "to confirm category when colours look similar (circle = base, diamond = syrup, triangle = topping).",
+    width / 2,
+    stripY + 80,
+    650,
+  );
+
   // Continue button
   actBtn.x = width / 2;
   actBtn.y = height / 2 + 210;
-  _drawActBtn(actBtn, "I UNDERSTAND — CONTINUE", [180, 80, 80]);
+  _drawActBtn(actBtn, "I UNDERSTAND, CONTINUE", [180, 80, 80]);
 
   cursor(isHover(actBtn) ? HAND : ARROW);
 }
@@ -219,8 +250,8 @@ const DEBRIEF_DATA = [
     colour: [200, 240, 200],
     accent: [60, 150, 60],
     points: [
-      "You experienced deuteranopia — the most common form of CVD.",
-      "Red and green collapsed into similar brownish tones.",
+      "You experienced deuteranopia which isthe most common form of CVD.",
+      "Red and green became much harder to tell apart, often looking similarly brownish.",
       "~8% of males navigate this every day: traffic lights, maps, food labels.",
       "Next: protanopia, where reds appear very dark and dim.",
     ],
@@ -338,19 +369,20 @@ function drawScenario() {
 
   fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
   textAlign(LEFT, CENTER);
-  textSize(13);
-  text("ACT 3 — REAL WORLD CHALLENGE", 24, 38);
+  textSize(12);
+  text("ACT 3 — REAL WORLD CHALLENGE", 24, 38, width * 0.62, 24);
 
   fill(80, 100, 200);
   textAlign(RIGHT, CENTER);
   textSize(12);
-  text("Tritanopia is active", width - 24, 38);
+  text("Tritanopia is active", width - 24 - width * 0.32, 38, width * 0.32, 24);
 
   // Question
   fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
   textAlign(CENTER, TOP);
   textSize(20);
-  text(scenarioData.question, width / 2, 110, width - 80);
+  const qW = width - 80;
+  text(scenarioData.question, (width - qW) / 2, 110, qW);
 
   // Draw options
   const opts = scenarioData.options;
