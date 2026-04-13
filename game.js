@@ -3,22 +3,52 @@
 // colorName = what the colour actually is (shown as accessibility label in Act 2)
 // =====================
 const TEA_BASES = [
-  { id: "black", label: "Black Tea",  colorName: "dark brown",   c: [95,  60,  35]  },
-  { id: "milk",  label: "Milk Tea",   colorName: "tan / beige",  c: [190, 150, 105] },
-  { id: "green", label: "Green Tea",  colorName: "olive green",  c: [80,  155, 90]  },
+  { id: "black", label: "Black Tea", colorName: "dark brown", c: [95, 60, 35] },
+  {
+    id: "milk",
+    label: "Milk Tea",
+    colorName: "tan / beige",
+    c: [190, 150, 105],
+  },
+  {
+    id: "green",
+    label: "Green Tea",
+    colorName: "olive green",
+    c: [80, 155, 90],
+  },
 ];
 
 const SYRUPS = [
-  { id: "straw", label: "Strawberry", colorName: "red-pink",     c: [225, 80,  105] },
-  { id: "melon", label: "Honeydew",   colorName: "bright green", c: [105, 210, 120] },
-  { id: "mango", label: "Mango",      colorName: "golden yellow",c: [245, 175, 60]  },
-  { id: "taro",  label: "Taro",       colorName: "purple",       c: [185, 105, 210] },
+  {
+    id: "straw",
+    label: "Strawberry",
+    colorName: "red-pink",
+    c: [225, 80, 105],
+  },
+  {
+    id: "melon",
+    label: "Honeydew",
+    colorName: "bright green",
+    c: [105, 210, 120],
+  },
+  {
+    id: "mango",
+    label: "Mango",
+    colorName: "golden yellow",
+    c: [245, 175, 60],
+  },
+  { id: "taro", label: "Taro", colorName: "purple", c: [185, 105, 210] },
 ];
 
 const TOPPINGS = [
-  { id: "boba",  label: "Boba",        colorName: "dark brown",   c: [55,  35,  25]  },
-  { id: "jelly", label: "Lychee Jelly",colorName: "pink-purple",  c: [205, 120, 215] },
-  { id: "pud",   label: "Pudding",     colorName: "pale yellow",  c: [245, 215, 120] },
+  { id: "boba", label: "Boba", colorName: "dark brown", c: [55, 35, 25] },
+  {
+    id: "jelly",
+    label: "Lychee Jelly",
+    colorName: "pink-purple",
+    c: [205, 120, 215],
+  },
+  { id: "pud", label: "Pudding", colorName: "pale yellow", c: [245, 215, 120] },
 ];
 
 // Serve button layout
@@ -28,7 +58,9 @@ const serveBtn = { x: 0, y: 0, w: 200, h: 58 };
 // CVD SIMULATION
 // =====================
 function applyCVD(rgb) {
-  let r = rgb[0], g = rgb[1], b = rgb[2];
+  let r = rgb[0],
+    g = rgb[1],
+    b = rgb[2];
   if (visionMode !== "CVD") return [r, g, b];
 
   if (cvdType === "DEUTAN") {
@@ -36,13 +68,11 @@ function applyCVD(rgb) {
     const rg = (r + g) / 2;
     r = lerp(r, rg, 0.82);
     g = lerp(g, rg, 0.92);
-
   } else if (cvdType === "PROTAN") {
     // Reds are dim and brownish — (~1% of males)
     const rg = (r + g) / 2;
-    r = lerp(r, rg, 0.80) * 0.58;
-    g = lerp(g, rg, 0.40);
-
+    r = lerp(r, rg, 0.8) * 0.58;
+    g = lerp(g, rg, 0.4);
   } else if (cvdType === "TRITAN") {
     // Blues and greens converge; yellows shift orange (~0.01%)
     const bg = (b + g) / 2;
@@ -75,7 +105,7 @@ function drawGame() {
   }
 
   if (phase === "PREVIEW") {
-    drawOrderArea(true);          // always show order during preview
+    drawOrderArea(true); // always show order during preview
     drawPreviewBanner();
     if (millis() > orderPreviewUntil) phase = "MIX";
   } else {
@@ -102,8 +132,8 @@ function drawGameHUD() {
   rectMode(CORNER);
   rect(0, 0, width, 68);
 
-  const tLeft = (phase === "MIX") ? max(0, mixEndsAt - millis()) : 0;
-  const secs  = (tLeft / 1000).toFixed(1);
+  const tLeft = phase === "MIX" ? max(0, mixEndsAt - millis()) : 0;
+  const secs = (tLeft / 1000).toFixed(1);
 
   // Act / Round
   fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
@@ -124,11 +154,14 @@ function drawGameHUD() {
   if (phase === "MIX") text(secs + "s", width / 2, 34);
 
   // CVD indicator (right)
-  const cvdLabel = visionMode === "NORMAL"
-    ? "Normal Vision"
-    : cvdType === "DEUTAN" ? "Deuteranopia (red-green)"
-    : cvdType === "PROTAN" ? "Protanopia (red-dim)"
-    : "Tritanopia (blue-green)";
+  const cvdLabel =
+    visionMode === "NORMAL"
+      ? "Normal Vision"
+      : cvdType === "DEUTAN"
+        ? "Deuteranopia (red-green)"
+        : cvdType === "PROTAN"
+          ? "Protanopia (red-dim)"
+          : "Tritanopia (blue-green)";
 
   const dotCol = visionMode === "NORMAL" ? [80, 160, 80] : [200, 80, 80];
   noStroke();
@@ -146,7 +179,11 @@ function drawGameHUD() {
     fill(lblCol[0], lblCol[1], lblCol[2]);
     textSize(12);
     textAlign(RIGHT, CENTER);
-    text(showLabels ? "Accessibility Labels: ON" : "Accessibility Labels: OFF", width - 16, 52);
+    text(
+      showLabels ? "Accessibility Labels: ON" : "Accessibility Labels: OFF",
+      width - 16,
+      52,
+    );
   }
 }
 
@@ -165,7 +202,11 @@ function drawPreviewBanner() {
   const tLeft = max(0, orderPreviewUntil - millis());
   fill(100, 100, 130);
   textSize(13);
-  text("Disappears in " + (tLeft / 1000).toFixed(1) + "s", width / 2, height / 2 + 16);
+  text(
+    "Disappears in " + (tLeft / 1000).toFixed(1) + "s",
+    width / 2,
+    height / 2 + 16,
+  );
 }
 
 // ── Order area (customer + order bubble) ──────────────────
@@ -196,10 +237,10 @@ function drawOrderArea(showOrder) {
   }
 
   // Customer monsters
-  const xs = [width - 530, width - 400, width - 270, width - 140];
+  const xs = [150, 255, 360, 465];
   for (let i = 0; i < 4; i++) {
-    const mood = (i === monsterSwap) ? "active" : "waiting";
-    drawMochiMonster(xs[i], 185, 55, (i + monsterSwap) % 4, mood);
+    const mood = i === monsterSwap ? "active" : "waiting";
+    drawMochiMonster(xs[i], 220, 55, (i + monsterSwap) % 4, mood);
   }
 }
 
@@ -212,8 +253,8 @@ function drawOrderBubble(x, y) {
   triangle(x + 20, y + 76, x + 58, y + 76, x + 40, y + 112);
 
   const slots = [
-    { label: "Base",    item: order.base,    px: x + 18  },
-    { label: "Syrup",   item: order.syrup,   px: x + 192 },
+    { label: "Base", item: order.base, px: x + 18 },
+    { label: "Syrup", item: order.syrup, px: x + 192 },
     { label: "Topping", item: order.topping, px: x + 366 },
   ];
 
@@ -232,9 +273,15 @@ function drawOrderBubble(x, y) {
     strokeWeight(2);
     const sc = s.px + 20;
     const sr = y + 32;
-    if      (i === 0) ellipse(sc, sr, 20, 20);
-    else if (i === 1) { push(); translate(sc, sr); rotate(PI/4); rectMode(CENTER); rect(0,0,16,16); pop(); }
-    else              triangle(sc, y+16, sc-11, y+48, sc+11, y+48);
+    if (i === 0) ellipse(sc, sr, 20, 20);
+    else if (i === 1) {
+      push();
+      translate(sc, sr);
+      rotate(PI / 4);
+      rectMode(CENTER);
+      rect(0, 0, 16, 16);
+      pop();
+    } else triangle(sc, y + 16, sc - 11, y + 48, sc + 11, y + 48);
     noStroke();
 
     fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
@@ -267,7 +314,8 @@ function drawWorkArea() {
     visionMode === "CVD"
       ? "WHAT YOU SEE (through " + cvdType + " CVD):"
       : "WHAT YOU SEE (normal vision):",
-    36, 276
+    36,
+    276,
   );
 
   // Ingredient bins
@@ -286,11 +334,11 @@ function drawWorkArea() {
 function drawIngredientBins() {
   const binGap = 210;
   const startX = 40;
-  const y      = 390;
+  const y = 390;
 
-  drawBinColumn("TEA BASE",  TEA_BASES, startX,            y, "base");
-  drawBinColumn("SYRUP",     SYRUPS,    startX + binGap,   y, "syrup");
-  drawBinColumn("TOPPING",   TOPPINGS,  startX + binGap*2, y, "topping");
+  drawBinColumn("TEA BASE", TEA_BASES, startX, y, "base");
+  drawBinColumn("SYRUP", SYRUPS, startX + binGap, y, "syrup");
+  drawBinColumn("TOPPING", TOPPINGS, startX + binGap * 2, y, "topping");
 }
 
 function drawBinColumn(title, list, x, y, slotKey) {
@@ -309,19 +357,19 @@ function drawBinColumn(title, list, x, y, slotKey) {
   text(title, x + colW / 2, y - 12);
 
   for (let i = 0; i < list.length; i++) {
-    const item    = list[i];
-    const cardY   = y + i * 52;
-    const card    = { x: x + colW / 2, y: cardY + 22, w: colW, h: 46 };
-    const hover   = isHover(card);
-    const chosen  = selection[slotKey] && selection[slotKey].id === item.id;
+    const item = list[i];
+    const cardY = y + i * 52;
+    const card = { x: x + colW / 2, y: cardY + 22, w: colW, h: 46 };
+    const hover = isHover(card);
+    const chosen = selection[slotKey] && selection[slotKey].id === item.id;
 
     item._card = card;
 
     // Card background
     noStroke();
-    if (chosen)     fill(150, 210, 255, 230);
+    if (chosen) fill(150, 210, 255, 230);
     else if (hover) fill(235, 245, 255, 230);
-    else            fill(255, 255, 255, 190);
+    else fill(255, 255, 255, 190);
     rectMode(CORNER);
     rect(x, cardY, colW, 46, 10);
 
@@ -371,9 +419,15 @@ function drawCupMochi() {
   const cx = width - 300;
   const cy = 355;
 
-  const baseC  = selection.base    ? getShownColor(selection.base.c)    : [230, 230, 230];
-  const syrupC = selection.syrup   ? getShownColor(selection.syrup.c)   : [240, 240, 240];
-  const topC   = selection.topping ? getShownColor(selection.topping.c) : [220, 220, 220];
+  const baseC = selection.base
+    ? getShownColor(selection.base.c)
+    : [230, 230, 230];
+  const syrupC = selection.syrup
+    ? getShownColor(selection.syrup.c)
+    : [240, 240, 240];
+  const topC = selection.topping
+    ? getShownColor(selection.topping.c)
+    : [220, 220, 220];
 
   // Cup outline
   stroke(MOCHI.outline[0], MOCHI.outline[1], MOCHI.outline[2]);
@@ -384,14 +438,14 @@ function drawCupMochi() {
   noStroke();
 
   // Liquid layers
-  fill(baseC[0],  baseC[1],  baseC[2],  200);
+  fill(baseC[0], baseC[1], baseC[2], 200);
   rectMode(CENTER);
   rect(cx, cy + 42, 96, 50, 12);
 
   fill(syrupC[0], syrupC[1], syrupC[2], 190);
   rect(cx, cy - 4, 96, 40, 12);
 
-  fill(topC[0],   topC[1],   topC[2],   180);
+  fill(topC[0], topC[1], topC[2], 180);
   rect(cx, cy - 44, 96, 36, 12);
 
   // Boba pearls
@@ -417,13 +471,17 @@ function drawServeButton() {
 
   rectMode(CENTER);
   noStroke();
-  if (!ready)      fill(190, 190, 200);
-  else if (hover)  fill(250, 190, 85);
-  else             fill(255, 205, 120);
+  if (!ready) fill(190, 190, 200);
+  else if (hover) fill(250, 190, 85);
+  else fill(255, 205, 120);
 
   rect(serveBtn.x, serveBtn.y, serveBtn.w, serveBtn.h, 16);
 
-  fill(ready ? MOCHI.inkDark[0] : 120, ready ? MOCHI.inkDark[1] : 120, ready ? MOCHI.inkDark[2] : 130);
+  fill(
+    ready ? MOCHI.inkDark[0] : 120,
+    ready ? MOCHI.inkDark[1] : 120,
+    ready ? MOCHI.inkDark[2] : 130,
+  );
   textAlign(CENTER, CENTER);
   textSize(18);
   text("SERVE ✓", serveBtn.x, serveBtn.y);
@@ -433,8 +491,13 @@ function drawServeButton() {
 
 // ── Monster drawing ───────────────────────────────────────
 function drawMochiMonster(x, y, size, idx, mood) {
-  const happyList   = [pinkMonster,        blueMonster,        greenMonster,        orangeMonster];
-  const neutralList = [pinkMonsterNeutral,  blueMonsterNeutral, greenMonsterNeutral, orangeMonsterNeutral];
+  const happyList = [pinkMonster, blueMonster, greenMonster, orangeMonster];
+  const neutralList = [
+    pinkMonsterNeutral,
+    blueMonsterNeutral,
+    greenMonsterNeutral,
+    orangeMonsterNeutral,
+  ];
   const img = (mood === "active" ? neutralList : happyList)[idx];
   if (!img) return;
   imageMode(CENTER);
@@ -448,8 +511,8 @@ function drawMochiMonster(x, y, size, idx, mood) {
 function gameMousePressed() {
   if (phase !== "MIX") return;
 
-  checkPick("base",    TEA_BASES);
-  checkPick("syrup",   SYRUPS);
+  checkPick("base", TEA_BASES);
+  checkPick("syrup", SYRUPS);
   checkPick("topping", TOPPINGS);
 
   const ready = selection.base && selection.syrup && selection.topping;
@@ -461,7 +524,12 @@ function gameMousePressed() {
 
 function gameKeyPressed() {
   if (keyCode === ENTER) {
-    if (phase === "MIX" && selection.base && selection.syrup && selection.topping) {
+    if (
+      phase === "MIX" &&
+      selection.base &&
+      selection.syrup &&
+      selection.topping
+    ) {
       serveDrink();
     }
   }
@@ -485,15 +553,15 @@ function checkPick(slotKey, list) {
 // =====================
 function startRound() {
   order = {
-    base:    random(TEA_BASES),
-    syrup:   random(SYRUPS),
+    base: random(TEA_BASES),
+    syrup: random(SYRUPS),
     topping: random(TOPPINGS),
   };
 
   monsterSwap = floor(random(4));
 
-  selection.base    = null;
-  selection.syrup   = null;
+  selection.base = null;
+  selection.syrup = null;
   selection.topping = null;
 
   if (act === 3) {
@@ -501,14 +569,14 @@ function startRound() {
     const previewMs = 2200;
     const timeLimit = max(7000, 12000 - (actRound - 1) * 900);
     orderPreviewUntil = millis() + previewMs;
-    mixEndsAt         = orderPreviewUntil + timeLimit;
-    phase             = "PREVIEW";
+    mixEndsAt = orderPreviewUntil + timeLimit;
+    phase = "PREVIEW";
   } else {
     // Acts 1 & 2: order always visible; time limit decreases each actRound
     const timeLimit = max(8000, 14000 - (actRound - 1) * 1000);
     orderPreviewUntil = millis();
-    mixEndsAt         = millis() + timeLimit;
-    phase             = "MIX";
+    mixEndsAt = millis() + timeLimit;
+    phase = "MIX";
   }
 }
 
@@ -519,9 +587,12 @@ function serveDrink() {
   totalServed++;
 
   const ok =
-    selection.base    && selection.base.id    === order.base.id    &&
-    selection.syrup   && selection.syrup.id   === order.syrup.id   &&
-    selection.topping && selection.topping.id === order.topping.id;
+    selection.base &&
+    selection.base.id === order.base.id &&
+    selection.syrup &&
+    selection.syrup.id === order.syrup.id &&
+    selection.topping &&
+    selection.topping.id === order.topping.id;
 
   if (ok) {
     totalCorrect++;
@@ -560,8 +631,11 @@ function _wrongMessage() {
   }
   // Show what was wrong
   const parts = [];
-  if (selection.base.id    !== order.base.id)    parts.push("Base should be " + order.base.label);
-  if (selection.syrup.id   !== order.syrup.id)   parts.push("Syrup should be " + order.syrup.label);
-  if (selection.topping.id !== order.topping.id) parts.push("Topping should be " + order.topping.label);
+  if (selection.base.id !== order.base.id)
+    parts.push("Base should be " + order.base.label);
+  if (selection.syrup.id !== order.syrup.id)
+    parts.push("Syrup should be " + order.syrup.label);
+  if (selection.topping.id !== order.topping.id)
+    parts.push("Topping should be " + order.topping.label);
   return "Wrong order!\n" + parts.join(" · ");
 }
