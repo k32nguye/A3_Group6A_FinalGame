@@ -50,6 +50,8 @@ let pinkMonsterNeutral,
 let mainBg;
 let titleFont;
 let bodyFont;
+let bgmTrack;
+const bgmToggleBtn = { x: 0, y: 0, w: 44, h: 44 };
 
 // Mochi colour palette (shared across screens)
 const MOCHI = {
@@ -109,10 +111,20 @@ function draw() {
   }
   drawFlash();
   drawScoreAnims();
+  drawBgmToggle();
 }
 
 function mousePressed() {
   unlockAudio();
+  startBgmLoop();
+
+  _syncBgmToggleBtn();
+  if (isHover(bgmToggleBtn)) {
+    playSound("click");
+    toggleBgm();
+    return;
+  }
+
   switch (currentScreen) {
     case "start":
       startMousePressed();
@@ -152,6 +164,14 @@ function mousePressed() {
 
 function keyPressed() {
   unlockAudio();
+  startBgmLoop();
+
+  if (key === "m" || key === "M") {
+    playSound("click");
+    toggleBgm();
+    return;
+  }
+
   switch (currentScreen) {
     case "start":
       startKeyPressed();
@@ -217,6 +237,29 @@ function drawFlash() {
 
 function spawnScoreAnim(val, x, y) {
   scoreAnims.push({ val, x, y, born: millis() });
+}
+
+function _syncBgmToggleBtn() {
+  bgmToggleBtn.x = bgmToggleBtn.w / 2 + 20;
+  bgmToggleBtn.y = height - bgmToggleBtn.h / 2 - 20;
+}
+
+function drawBgmToggle() {
+  _syncBgmToggleBtn();
+  const hov = isHover(bgmToggleBtn);
+  const enabled = isBgmEnabled();
+  const icon = enabled ? "🔊" : "🔇";
+
+  noStroke();
+  fill(255, 255, 255, hov ? 245 : 220);
+  rectMode(CENTER);
+  rect(bgmToggleBtn.x, bgmToggleBtn.y, bgmToggleBtn.w, bgmToggleBtn.h, 12);
+
+  if (bodyFont) textFont(bodyFont);
+  fill(enabled ? 55 : 130, enabled ? 150 : 130, enabled ? 90 : 130);
+  textAlign(CENTER, CENTER);
+  textSize(20);
+  text(icon, bgmToggleBtn.x, bgmToggleBtn.y + 1);
 }
 
 function drawScoreAnims() {

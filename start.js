@@ -5,6 +5,7 @@ const instrBtn = { x: 0, y: 620, w: 280, h: 86, label: "INSTRUCTIONS" };
 function preload() {
   titleFont = loadFont("assets/fonts/PressStart2P-Regular.ttf");
   bodyFont = "Poppins";
+  bgmTrack = loadSound("assets/bgm.mp3");
 
   // monsters
   pinkMonster = loadImage("assets/pinkmonsterhappy.png");
