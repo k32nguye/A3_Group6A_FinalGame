@@ -1119,7 +1119,7 @@ function _drawTutDone() {
   const cardW = min(width - 80, 780);
   const cx = width / 2;
   const bodyW = cardW - 80;
-  const bodyX = cx - bodyW / 2;
+  const doneTextYOffset = -20; // more negative = move all final-screen text up
   noStroke();
   fill(255, 255, 255, 235);
   rectMode(CENTER);
@@ -1129,17 +1129,17 @@ function _drawTutDone() {
   fill(50, 150, 80);
   textAlign(CENTER, CENTER);
   textSize(22);
-  text("GREAT WORK!", cx, height / 2 - 180);
+  text("GREAT WORK!", cx, height / 2 - 180 + doneTextYOffset);
   if (bodyFont) textFont(bodyFont);
 
   fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
-  textAlign(CENTER, CENTER);
+  textAlign(CENTER, TOP);
   textSize(15);
   textLeading(26);
   text(
     "You know how to play. Here is what to remember:",
-    bodyX,
-    height / 2 - 130,
+    cx,
+    height / 2 - 142 + doneTextYOffset,
     bodyW,
   );
 
@@ -1150,7 +1150,7 @@ function _drawTutDone() {
     },
     {
       icon: "->",
-      text: "Your ingredient bins are filtered through CVD - things look different",
+      text: "Your ingredient bins are filtered through CVD - things will look different",
     },
     {
       icon: "->",
@@ -1160,24 +1160,37 @@ function _drawTutDone() {
       icon: "->",
       text: "Use brightness and labels when colours are hard to tell apart",
     },
+    {
+      icon: "->",
+      text: "Good luck!",
+    },
   ];
 
   for (let i = 0; i < tips.length; i++) {
-    const ty = height / 2 - 68 + i * 56;
+    const ty = height / 2 - 68 + i * 56 + doneTextYOffset;
+    const isFinalTip = i === tips.length - 1;
     noStroke();
-    fill(240, 255, 240);
+    if (isFinalTip) fill(255, 236, 180, 230);
+    else fill(240, 255, 240);
     rectMode(CENTER);
-    rect(cx, ty, cardW - 60, 46, 10);
-    fill(50, 150, 80);
-    textAlign(LEFT, CENTER);
-    textSize(15);
-    text(tips[i].icon, cx - (cardW - 80) / 2, ty);
-    fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
-    text(tips[i].text, cx - (cardW - 80) / 2 + 26, ty, cardW - 120);
+    rect(cx, ty, cardW - 60, 46, isFinalTip ? 14 : 10);
+
+    if (isFinalTip) {
+      fill(130, 85, 20);
+      textStyle(BOLD);
+      textSize(17);
+    } else {
+      fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
+      textStyle(NORMAL);
+      textSize(12);
+    }
+    textAlign(CENTER, CENTER);
+    text(tips[i].text, cx, ty);
   }
+  textStyle(NORMAL);
 
   _TUT_NEXT.x = cx;
-  _TUT_NEXT.y = height - 52;
+  _TUT_NEXT.y = height - 170;
   const h = isHover(_TUT_NEXT);
   noStroke();
   fill(h ? 250 : 255, h ? 190 : 205, h ? 85 : 120);
@@ -1186,7 +1199,7 @@ function _drawTutDone() {
   fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
   textAlign(CENTER, CENTER);
   textSize(15);
-  text("BEGIN ACT 1  ->", _TUT_NEXT.x, _TUT_NEXT.y);
+  text("BEGIN SHIFT  ->", _TUT_NEXT.x, _TUT_NEXT.y);
   cursor(h ? HAND : ARROW);
 }
 
