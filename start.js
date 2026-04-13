@@ -32,9 +32,8 @@ function drawStart() {
 
   // Buttons
   drawMenuButton(playBtn, true);
-  drawMenuButton(instrBtn, false);
 
-  cursor(isHover(playBtn) || isHover(instrBtn) ? HAND : ARROW);
+  cursor(isHover(playBtn) ? HAND : ARROW);
 
   // monsters on counter
   drawMonsterLineDecor();

@@ -1,5 +1,5 @@
 // =====================
-// INSTRUCTIONS / CVD EXPLAINER SCREEN
+// (hidden) INSTRUCTIONS / CVD EXPLAINER SCREEN
 // Visual side-by-side comparison of Normal vs CVD vision
 // =====================
 
