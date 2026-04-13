@@ -94,7 +94,8 @@ function getShownColor(rgb) {
 // MAIN GAME DRAW
 // =====================
 function drawGame() {
-  background(233, 246, 255);
+  imageMode(CORNER);
+  image(orderBg, 0, 0, width, height);
 
   drawGameHUD();
 
@@ -214,9 +215,9 @@ function drawPreviewBanner() {
 function drawOrderArea(showOrder) {
   // Panel
   noStroke();
-  fill(MOCHI.sky[0], MOCHI.sky[1], MOCHI.sky[2]);
+  fill(MOCHI.sky[0], MOCHI.sky[1], MOCHI.sky[2], 115);
   rectMode(CORNER);
-  rect(20, 74, width - 40, 188, 16);
+  rect(20, 74, width - 40, 160, 16);
 
   // "Customer wants:" label
   fill(MOCHI.inkDark[0], MOCHI.inkDark[1], MOCHI.inkDark[2]);
@@ -300,11 +301,9 @@ function drawOrderBubble(x, y) {
 function drawWorkArea() {
   // Counter surface
   noStroke();
-  fill(MOCHI.counterTop[0], MOCHI.counterTop[1], MOCHI.counterTop[2]);
+  fill(MOCHI.counterTop[0], MOCHI.counterTop[1], MOCHI.counterTop[2], 145);
   rectMode(CORNER);
-  rect(20, 270, width - 40, 120, 14);
-  fill(MOCHI.counterFront[0], MOCHI.counterFront[1], MOCHI.counterFront[2]);
-  rect(20, 360, width - 40, height - 360, 14);
+  rect(20, 270, width - 40, 95, 14);
 
   // "What you see:" label
   fill(visionMode === "CVD" ? [180, 60, 60] : [40, 50, 70]);

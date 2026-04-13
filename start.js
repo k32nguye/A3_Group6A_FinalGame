@@ -18,6 +18,7 @@ function preload() {
   orangeMonsterNeutral = loadImage("assets/orangemonsterneutral.png");
 
   mainBg = loadImage("assets/mainbackground.png");
+  orderBg = loadImage("assets/orderbg.jpeg");
 }
 
 function drawStart() {
